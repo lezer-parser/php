@@ -46,7 +46,7 @@ Template(
       ArithOp,
       UpdateExpression(
         VariableName,
-        AssignOp,
+        UpdateOp,
         VariableName
       )
     )
@@ -114,28 +114,6 @@ Template(
         CallExpression(Name, ArgList),
         LogicOp,
         CallExpression(Name, ArgList)))))
-
-# Cast expressions in assignments
-
-<?php
-
-(int) $foo = (integer) $bar;
-(int) $foo += 5;
-
-==>
-
-Template(
-  TextInterpolation(PhpOpen),
-  ExpressionStatement(
-    AssignmentExpression(
-      CastExpression(CastType, VariableName),
-      AssignOp,
-      CastExpression(CastType, VariableName))),
-   ExpressionStatement(
-    UpdateExpression(
-      CastExpression(CastType, VariableName),
-      UpdateOp,
-      Integer)))
 
 # Reserved words as function calls
 
@@ -501,7 +479,7 @@ Template(
         BinaryExpression(
           Integer,
           LogicOp,
-          UpdateExpressionExpression(
+          UpdateExpression(
             VariableName,
             UpdateOp,
             BinaryExpression(
@@ -530,7 +508,7 @@ Template(
                             CompareOp,
                             BinaryExpression(
                               Integer,
-                              CompareOp,
+                              BitOp,
                               BinaryExpression(
                                 Integer,
                                 ArithOp,
@@ -539,10 +517,9 @@ Template(
                                   ArithOp,
                                   BinaryExpression(
                                     CastExpression(
-                                      CastType,
-                                      LogicOp,
+                                      NamedType(Name),
                                       Integer),
-                                    ArithOp,
+                                    LogicOp,
                                     Name))))))))))))))))),
   ExpressionStatement(
     BinaryExpression(
@@ -561,7 +538,7 @@ Template(
                               BinaryExpression(
                                 BinaryExpression(
                                   CastExpression(
-                                    CastType,
+                                    NamedType(Name),
                                     Integer),
                                     LogicOp,
                                     Name),

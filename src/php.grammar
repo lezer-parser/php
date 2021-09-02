@@ -5,6 +5,8 @@
   scope,
   new,
   call,
+  cast,
+
   else @right,
 
   optionalType,
@@ -26,12 +28,13 @@
   logAnd @left,
   logOr @left,
   qq @right,
-  and @left,
-  xor @left,
-  or @left,
 
   conditional @left,
   update @right,
+
+  and @left,
+  xor @left,
+  or @left,
 
   yield @right
 }
@@ -293,8 +296,8 @@ Block { "{" statement* "}" }
 expression[@isGroup=Expression] {
   ConditionalExpression { expression !conditional LogicOp<"?"> expression? ":" expression } |
   MatchExpression { match ParenthesizedExpression MatchBlock { "{" commaSep1<MatchArm> "}" } } |
-  UpdateExpression { expression !update UpdateOp expression } |
-  AssignmentExpression { expression !update "=" "&"? expression } |
+  AssignmentExpression { variable !update "=" "&"? expression } |
+  UpdateExpression { variable !update UpdateOp expression } |
   YieldExpression { yield (!yield arrayElement | from expression)? } |
   BinaryExpression |
   IncludeExpression { (include | include_once) expression } |
@@ -304,22 +307,7 @@ expression[@isGroup=Expression] {
     ControlOp<"@"> expression |
     (ArithOp<"+" | "-"> | LogicOp<"~" | "!">) !unary expression
   } |
-  CastExpression { castOpen type ")" expression } |
-  VariableName |
-  DynamicVariable { "$" VariableName | "${" expression "}" } |
-  SubscriptExpression { expression (!member "[" expression? "]" | !member "{" expression "}") } |
-  CallExpression { expression !call ArgList } |
-  MemberExpression { expression !member ("->" | "?->") memberName } |
-  literal |
-  ScopedExpression |
   qualifiedName |
-  ArrayExpression {
-    array "(" ","? commaSep<arrayElement> ")" |
-    "[" ","? commaSep<arrayElement> "]"
-  } |
-  ListExpression {
-    list "(" ","? commaSep<expression | Pair { expression !pair "=>" expression }> ")"
-  } |
   PrintIntrinsic { print expression } |
   FunctionExpression {
     static? function "&"? ParamList (use "(" commaSep<"&"? VariableName> ")")? (":" type)? Block
@@ -335,8 +323,29 @@ expression[@isGroup=Expression] {
   } |
   ShellCommandExpression |
   ParenthesizedExpression |
-  ThrowExpression { throw expression }
+  ThrowExpression { throw expression } |
+  variable |
+  literal
 }
+
+variable {
+  ArrayExpression {
+    array "(" ","? commaSep<arrayElement> ")" |
+    "[" ","? commaSep<arrayElement> "]"
+  } |
+  ListExpression {
+    list "(" ","? commaSep<expression | Pair { expression !pair "=>" expression }> ")"
+  } |
+  SubscriptExpression { expression (!member "[" expression? "]" | !member "{" expression "}") } |
+  MemberExpression { expression !member ("->" | "?->") memberName } |
+  DynamicVariable |
+  VariableName |
+  CallExpression { expression !call ArgList } |
+  CastExpression { castOpen type ")" !cast expression } |
+  ScopedExpression
+}
+
+DynamicVariable { "$" (VariableName | DynamicVariable) | "${" expression "}" }
 
 ParenthesizedExpression { "(" expression ")" }
 
