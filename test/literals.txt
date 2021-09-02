@@ -75,7 +75,7 @@ Template(
   ExpressionStatement(Integer)
 )
 
-# Testing string scanner confirmance
+# Testing string scanner conformance
 
 <?php echo "\"\t\\'" . '\n\\\'a\\\b\\' ?>
 
@@ -83,7 +83,7 @@ Template(
 
 Template(
   TextInterpolation(PhpOpen),
-  EchoStatement(BinaryExpression(InterpolatedString(EscapeSequence, EscapeSequence, EscapeSequence), ArithOp, String)),
+  EchoStatement(echo, BinaryExpression(String(EscapeSequence, EscapeSequence, EscapeSequence), ArithOp, String)),
   TextInterpolation(PhpClose))
 
 # Shell command
@@ -186,10 +186,10 @@ Template(
 
 Template(
   TextInterpolation(PhpOpen),
-  ExpressionStatement(InterpolatedString(EscapeSequence)), LineComment,
-  ExpressionStatement(InterpolatedString(EscapeSequence)), LineComment,
-  ExpressionStatement(InterpolatedString(EscapeSequence)), LineComment,
-  ExpressionStatement(InterpolatedString(EscapeSequence)), LineComment,
-  ExpressionStatement(InterpolatedString(EscapeSequence)), LineComment,
-  ExpressionStatement(InterpolatedString(EscapeSequence)), LineComment)
+  ExpressionStatement(String(EscapeSequence)), LineComment,
+  ExpressionStatement(String(EscapeSequence)), LineComment,
+  ExpressionStatement(String(EscapeSequence)), LineComment,
+  ExpressionStatement(String(EscapeSequence)), LineComment,
+  ExpressionStatement(String(EscapeSequence)), LineComment,
+  ExpressionStatement(String(EscapeSequence)), LineComment)
 

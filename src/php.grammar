@@ -3,8 +3,8 @@
   namespace,
   member,
   scope,
+  new,
   call,
-  new @right,
   else @right,
 
   optionalType,
@@ -223,19 +223,19 @@ UseList {
   "{" ((UseInsteadOfClause | UseAsClause) semicolon)* "}"
 }
 
-UseInsteadOfClause /* precedence: left 0 */ {
-  (ClassConstantAccessExpression | Name) insteadof Name
+UseInsteadOfClause {
+  (ScopedExpression | Name) insteadof Name
 }
 
 UseAsClause {
-  (ClassConstantAccessExpression | Name) as (Visibility? Name | Visibility Name?)
+  (ScopedExpression | Name) as (Visibility? Name | Visibility Name?)
 }
 
 functionDefinitionHeader {
-  function "&"? Name FormalParameters (":" type)?
+  function "&"? Name ParamList (":" type)?
 }
 
-FormalParameters {
+ParamList {
   "(" commaSep<SimpleParameter | VariadicParameter | PropertyPromotionParameter> ")"
 }
 
@@ -251,8 +251,8 @@ VariadicParameter {
   Attributes* type? "&"? "..." VariableName
 }
 
-type {
-  UnionType { type (!unionType LogicOp<"|"> type)+ }
+type[@isGroup=Type] {
+  UnionType { type (!unionType LogicOp<"|"> type)+ } |
   OptionalType { !optionalType LogicOp<"?"> type } |
   NamedType
 }
@@ -301,32 +301,32 @@ expression[@isGroup=Expression] {
   RequireExpression { (require | require_once) expression } |
   CloneExpression { clone expression } |
   UnaryOpExpression {
-    LogicOp<"@"> expression |
+    ControlOp<"@"> expression |
     (ArithOp<"+" | "-"> | LogicOp<"~" | "!">) !unary expression
   } |
   CastExpression { castOpen type ")" expression } |
   VariableName |
+  DynamicVariable { "$" VariableName | "${" expression "}" } |
   SubscriptExpression { expression (!member "[" expression? "]" | !member "{" expression "}") } |
   CallExpression { expression !call ArgList } |
-  ScopedPropertyAccessExpression { expression !scope "::" VariableName } |
-  MemberAccessExpression { expression !member ("->" | "?->") memberName } |
+  MemberExpression { expression !member ("->" | "?->") memberName } |
   literal |
-  ClassConstantAccessExpression |
+  ScopedExpression |
   qualifiedName |
   ArrayExpression {
-    array "(" commaSep<arrayElement> ")" |
-    "[" commaSep<arrayElement> "]"
+    array "(" ","? commaSep<arrayElement> ")" |
+    "[" ","? commaSep<arrayElement> "]"
   } |
   ListExpression {
-    list "(" commaSep<expression | Pair { expression !pair "=>" expression }> ")"
+    list "(" ","? commaSep<expression | Pair { expression !pair "=>" expression }> ")"
   } |
   PrintIntrinsic { print expression } |
-  AnonymousFunctionCreationExpression {
-    static? function "&"? FormalParameters (use "(" commaSep<"&"? VariableName> ")")? (":" type)? Block
+  FunctionExpression {
+    static? function "&"? ParamList (use "(" commaSep<"&"? VariableName> ")")? (":" type)? Block
   } |
-  ArrowFunction { static? fn "&"? FormalParameters (":" type)? "=>" expression } |
-  ObjectCreationExpression {
-    new expression !new ArgList? |
+  ArrowFunction { static? fn "&"? ParamList (":" type)? "=>" expression } |
+  NewExpression {
+    new expression (!new ArgList)? |
     new class ArgList? BaseClause? ClassInterfaceClause? DeclarationList
   } |
   IncDecExpression[@name=UpdateExpression] {
@@ -340,7 +340,7 @@ expression[@isGroup=Expression] {
 
 ParenthesizedExpression { "(" expression ")" }
 
-ClassConstantAccessExpression { expression !scope "::" Name }
+ScopedExpression { expression !scope "::" (Name | VariableName) }
 
 ArgList {
   "(" commaSep<Argument> ")"
@@ -351,12 +351,12 @@ Argument {
 }
 
 memberName {
-  static | Name | VariableName |
-  "{" expression "}"
+  Name | VariableName | "{" expression "}"
 }
 
 arrayElement {
-  ("&" | "...")? expression |
+  "&"? expression |
+  VariadicUnpacking { "..." expression } |
   Pair { expression !pair "=>" "&"? expression }
 }
 
@@ -373,7 +373,9 @@ Attribute {
 
   Text { textElement+ }
 
-  InterpolatedString { startInterpolatedString interpolatedStringPart* endInterpolatedString }
+  InterpolatedString[@name=String] {
+    startInterpolatedString interpolatedStringPart* endInterpolatedString
+  }
 
   interpolatedStringPart {
     EscapeSequence |
@@ -406,7 +408,7 @@ string {
 
 BinaryExpression {
   expression !instanceof instanceof expression |
-  expression !qq LogicOp<"@"> expression |
+  expression !qq LogicOp<"??"> expression |
   expression !and and expression |
   expression !or or expression |
   expression !xor xor expression |
@@ -432,16 +434,27 @@ semicolon {
 @skip { LineComment | BlockComment | whitespace | TextInterpolation }
 
 @external specialize {Name} keywords from "./tokens" {
-  abstract, and, array, as, Boolean, break, case, catch, class, clone, const, continue, default, declare, do,
-  echo, else, elseif, enddeclare, endfor, endforeach, endif, endswitch, endwhile, enum, extends,
-  final, finally, fn, for, foreach, from, function, global, goto, if, implements, include,
-  include_once, instanceof, insteadof, interface, list, match, namespace, new, null, or, print, require,
-  require_once, return, static, switch, throw, trait, try, unset, use, var, Visibility,
-  while, xor, yield
+  abstract[@name=abstract], and[@name=LogicOp], array[@name=array], as[@name=as], Boolean,
+  break[@name=break], case[@name=case], catch[@name=catch], class[@name=class],
+  clone[@name=clone], const[@name=const], continue[@name=continue], default[@name=default],
+  declare[@name=declare], do[@name=do], echo[@name=echo], else[@name=echo], elseif[@name=elseif],
+  enddeclare[@name=enddeclare], endfor[@name=endfor], endforeach[@name=endforeach],
+  endif[@name=endif], endswitch[@name=endswitch], endwhile[@name=endwhile], enum[@name=enum],
+  extends[@name=extends], final[@name=final], finally[@name=finally], fn[@name=fn], for[@name=for],
+  foreach[@name=foreach], from[@name=from], function[@name=function], global[@name=global],
+  goto[@name=goto], if[@name=if], implements[@name=implements], include[@name=include],
+  include_once[@name=include_once], instanceof[@name=LogicOp], insteadof[@name=insteadof],
+  interface[@name=interface], list[@name=list], match[@name=match], namespace[@name=namespace],
+  new[@name=new], null[@name=null], or[@name=LogicOp], print[@name=print], require[@name=require],
+  require_once[@name=require_once], return[@name=return], switch[@name=switch], throw[@name=throw],
+  trait[@name=trait], try[@name=try], unset[@name=unset], use[@name=use], var[@name=var], Visibility,
+  while[@name=while], xor[@name=LogicOp], yield[@name=yield]
 }
 
 commaSep<content> { "" | content ("," content?)* }
 commaSep1<content> { content ("," content?)* }
+
+static { @extend[@name=static]<Name, "static" | "STATIC"> }
 
 @external tokens expression from "./tokens" {
   castOpen[@name="("],
@@ -501,6 +514,7 @@ commaSep1<content> { content ("," content?)* }
   ArithOp<term> { term }
   LogicOp<term> { term }
   BitOp<term> { term }
+  ControlOp<term> { term }
 
   startInterpolatedString { $[bB]? '"' }
   endInterpolatedString { '"' }
@@ -517,6 +531,8 @@ commaSep1<content> { content ("," content?)* }
 
   VariableName { "$" Name }
 
+  @precedence { VariableName, "${", "$" }
+
   LineComment { ("//" | "#") lineCommentRest? }
   lineCommentRest { ![\r\n<] lineCommentRest? | "<" lineCommentLess }
   lineCommentLess { $[\r\n] | ![?\r\n] lineCommentRest? }
@@ -527,8 +543,8 @@ commaSep1<content> { content ("," content?)* }
   blockCommentRest { ![*] blockCommentRest | "*" blockCommentAfterStar }
   blockCommentAfterStar { "/" | "*" blockCommentAfterStar | ![/*] blockCommentRest }
 
-  "{" "}" "#[" "[" "]" "(" ")"
-  ";" ":" "::" "," "\\" "?->" "->" "=>" "&" "..."
+  "${" "{" "}" "#[" "[" "]" "(" ")"
+  ";" ":" "::" "," "\\" "?->" "->" "=>" "&" "$" "..."
   "="[@name=AssignOp]
 }
 

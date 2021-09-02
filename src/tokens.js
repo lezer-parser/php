@@ -5,7 +5,7 @@ import {
   endswitch, endwhile, _enum, _extends, final, _finally, fn, _for, foreach, from,
   _function, global, goto, _if, _implements, include, include_once, _instanceof,
   insteadof, _interface, list, match, namespace, _new, _null, or, print, require, require_once,
-  _return, _static, _switch, _throw, trait, _try, unset, use, _var, Visibility,
+  _return, _switch, _throw, trait, _try, unset, use, _var, Visibility,
   _while, xor, _yield,
 
   castOpen, eof, automaticSemicolon, HeredocString,
@@ -66,7 +66,6 @@ const keywordMap = {
   require,
   require_once,
   return: _return,
-  static: _static,
   switch: _switch,
   throw: _throw,
   trait,
