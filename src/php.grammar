@@ -1,0 +1,537 @@
+@precedence {
+  pair,
+  namespace,
+  member,
+  scope,
+  call,
+  new @right,
+  else @right,
+
+  optionalType,
+  unionType @left,
+
+  incdec @left,
+  instanceof @left,
+  unary @left,
+  exponent @right,
+  mult @left,
+  plus @left,
+  shift @left,
+  concat @left,
+  compare @left,
+  equal @left,
+  binAnd @left,
+  binXor @left,
+  binOr @left,
+  logAnd @left,
+  logOr @left,
+  qq @right,
+  and @left,
+  xor @left,
+  or @left,
+
+  conditional @left,
+  update @right,
+
+  yield @right
+}
+
+@skip {} {
+  @top Template {
+    TextInterpolation { Text? PhpOpen } (LineComment | BlockComment | whitespace)* topStatements |
+    Text?
+  }
+}
+
+@top Program {
+  statement*
+}
+
+topStatements { statement* eof }
+
+statement[@isGroup=Statement] {
+  EmptyStatement { ";" } |
+  Block |
+  NamedLabelStatement { Name ":" } |
+  ExpressionStatement { expression semicolon } |
+  IfStatement {
+    if ParenthesizedExpression (
+      statement (!else elseif ParenthesizedExpression statement)* (!else else statement)? |
+      ColonBlock (!else elseif ParenthesizedExpression ColonBlock)* (!else else ColonBlock)? endif semicolon
+    )
+  } |
+  SwitchStatement {
+    switch ParenthesizedExpression (
+      Block { "{" (CaseStatement | DefaultStatement)* "}" } |
+      ColonBlock { ":" (CaseStatement | DefaultStatement)* } endswitch semicolon
+    )
+  } |
+  WhileStatement {
+    while ParenthesizedExpression (statement | ColonBlock endwhile semicolon)
+  } |
+  DoStatement {
+    do statement while ParenthesizedExpression semicolon
+  } |
+  ForStatement {
+    for "(" expressions? ";" expressions? ";" expressions? ")" (automaticSemicolon | statement | ColonBlock endfor semicolon)
+  } |
+  ForeachStatement {
+    foreach "(" expression as (ForeachPair | expression) ")" (automaticSemicolon | statement | ColonBlock endforeach semicolon)
+  } |
+  GotoStatement {
+    goto Name semicolon
+  } |
+  ContinueStatement {
+    continue expression? semicolon
+  } |
+  BreakStatement {
+    break expression? semicolon
+  } |
+  ReturnStatement {
+    return expression? semicolon
+  } |
+  TryStatement {
+    try Block (catch "(" type VariableName? ")" Block | finally Block)+
+  } |
+  DeclareStatement {
+    declare "(" Name "=" literal ")" (statement | ColonBlock enddeclare semicolon | automaticSemicolon)
+  } |
+  EchoStatement {
+    echo expressions semicolon
+  } |
+  UnsetStatement {
+    unset "(" commaSep1<expression> ")" semicolon
+  } |
+  ConstDeclaration {
+    Attributes* Visibility? const commaSep1<ConstElement> semicolon
+  } |
+  FunctionDefinition {
+    Attributes* functionDefinitionHeader Block
+  } |
+  ClassDeclaration {
+    Attributes* (final | abstract)? class Name BaseClause? ClassInterfaceClause? DeclarationList
+  } |
+  InterfaceDeclaration {
+    interface Name BaseClause? DeclarationList
+  } |
+  TraitDeclaration {
+    trait Name DeclarationList
+  } |
+  EnumDeclaration {
+    Attributes* enum Name (":" type)? ClassInterfaceClause? EnumDeclarationList
+  } |
+  NamespaceDefinition {
+    namespace (namespaceName semicolon | namespaceName? Block)
+  } |
+  NamespaceUseDeclaration {
+    use (function | const)? (commaSep1<NamespaceUseClause> | "\\"? (Name !namespace "\\")* NamespaceUseGroup) semicolon
+  } |
+  GlobalDeclaration {
+    global commaSep1<expression> semicolon
+  } |
+  FunctionStaticDeclaration {
+    static commaSep1<StaticVariableDeclaration> semicolon
+  }
+}
+
+StaticVariableDeclaration {
+  VariableName ("=" expression)?
+}
+
+NamespaceUseClause {
+  qualifiedName NamespaceAliasingClause?
+}
+
+qualifiedName {
+  Name |
+  QualifiedName {
+    "\\" (Name !namespace "\\")* Name |
+    (Name !namespace "\\")+ Name
+  }
+}
+
+namespaceName {
+  Name |
+  QualifiedName {
+    (Name !namespace "\\")+ Name
+  }
+}
+
+NamespaceAliasingClause {
+  as Name
+}
+
+NamespaceUseGroup {
+  "{" commaSep1<NamespaceUseGroupClause> "}"
+}
+
+NamespaceUseGroupClause {
+  (function | const)? namespaceName NamespaceAliasingClause?
+}
+
+BaseClause {
+  extends commaSep1<qualifiedName>
+}
+
+EnumDeclarationList {
+  "{" (EnumCase | MethodDeclaration | UseDeclaration)* "}"
+}
+
+EnumCase {
+  Attributes* case Name ("=" (String | Integer))? semicolon
+}
+
+DeclarationList {
+  "{" memberDeclaration* "}"
+}
+
+ClassInterfaceClause {
+  implements commaSep1<qualifiedName>
+}
+
+memberDeclaration {
+  ConstDeclaration { Attributes* modifier* const commaSep1<ConstElement> semicolon } |
+  PropertyDeclaration { Attributes* modifier* type? commaSep1<PropertyElement> semicolon } |
+  MethodDeclaration |
+  UseDeclaration
+}
+
+modifier {
+  var |
+  Visibility |
+  final |
+  abstract
+}
+
+PropertyElement {
+  VariableName PropertyInitializer?
+}
+
+PropertyInitializer {
+  "=" expression
+}
+
+MethodDeclaration {
+  Attributes* modifier* functionDefinitionHeader (Block | semicolon)
+}
+
+UseDeclaration {
+  use commaSep1<qualifiedName> (UseList | semicolon)
+}
+
+UseList {
+  "{" ((UseInsteadOfClause | UseAsClause) semicolon)* "}"
+}
+
+UseInsteadOfClause /* precedence: left 0 */ {
+  (ClassConstantAccessExpression | Name) insteadof Name
+}
+
+UseAsClause {
+  (ClassConstantAccessExpression | Name) as (Visibility? Name | Visibility Name?)
+}
+
+functionDefinitionHeader {
+  function "&"? Name FormalParameters (":" type)?
+}
+
+FormalParameters {
+  "(" commaSep<SimpleParameter | VariadicParameter | PropertyPromotionParameter> ")"
+}
+
+PropertyPromotionParameter {
+  Visibility type? VariableName ("=" expression)?
+}
+
+SimpleParameter {
+  Attributes* type? "&"? VariableName ("=" expression)?
+}
+
+VariadicParameter {
+  Attributes* type? "&"? "..." VariableName
+}
+
+type {
+  UnionType { type (!unionType LogicOp<"|"> type)+ }
+  OptionalType { !optionalType LogicOp<"?"> type } |
+  NamedType
+}
+
+NamedType { qualifiedName }
+
+ConstElement {
+  Name "=" expression
+}
+
+literal {
+  Integer |
+  Float |
+  string |
+  Boolean |
+  null
+}
+
+expressions {
+  expression |
+  SequenceExpression { expression ("," expression)+ }
+}
+
+ForeachPair { expression "=>" expression }
+
+ColonBlock { ":" statement* }
+
+MatchArm { (default | commaSep1<expression>) "=>" expression }
+
+
+
+CaseStatement { case expression (":" | ";") statement* }
+
+DefaultStatement { default (":" | ";") statement* }
+
+Block { "{" statement* "}" }
+
+expression[@isGroup=Expression] {
+  ConditionalExpression { expression !conditional LogicOp<"?"> expression? ":" expression } |
+  MatchExpression { match ParenthesizedExpression MatchBlock { "{" commaSep1<MatchArm> "}" } } |
+  UpdateExpression { expression !update UpdateOp expression } |
+  AssignmentExpression { expression !update "=" "&"? expression } |
+  YieldExpression { yield (!yield arrayElement | from expression)? } |
+  BinaryExpression |
+  IncludeExpression { (include | include_once) expression } |
+  RequireExpression { (require | require_once) expression } |
+  CloneExpression { clone expression } |
+  UnaryOpExpression {
+    LogicOp<"@"> expression |
+    (ArithOp<"+" | "-"> | LogicOp<"~" | "!">) !unary expression
+  } |
+  CastExpression { castOpen type ")" expression } |
+  VariableName |
+  SubscriptExpression { expression (!member "[" expression? "]" | !member "{" expression "}") } |
+  CallExpression { expression !call ArgList } |
+  ScopedPropertyAccessExpression { expression !scope "::" VariableName } |
+  MemberAccessExpression { expression !member ("->" | "?->") memberName } |
+  literal |
+  ClassConstantAccessExpression |
+  qualifiedName |
+  ArrayExpression {
+    array "(" commaSep<arrayElement> ")" |
+    "[" commaSep<arrayElement> "]"
+  } |
+  ListExpression {
+    list "(" commaSep<expression | Pair { expression !pair "=>" expression }> ")"
+  } |
+  PrintIntrinsic { print expression } |
+  AnonymousFunctionCreationExpression {
+    static? function "&"? FormalParameters (use "(" commaSep<"&"? VariableName> ")")? (":" type)? Block
+  } |
+  ArrowFunction { static? fn "&"? FormalParameters (":" type)? "=>" expression } |
+  ObjectCreationExpression {
+    new expression !new ArgList? |
+    new class ArgList? BaseClause? ClassInterfaceClause? DeclarationList
+  } |
+  IncDecExpression[@name=UpdateExpression] {
+    expression !incdec ArithOp<"++" | "--"> |
+    ArithOp<"++" | "--"> !incdec expression
+  } |
+  ShellCommandExpression |
+  ParenthesizedExpression |
+  ThrowExpression { throw expression }
+}
+
+ParenthesizedExpression { "(" expression ")" }
+
+ClassConstantAccessExpression { expression !scope "::" Name }
+
+ArgList {
+  "(" commaSep<Argument> ")"
+}
+
+Argument {
+  (Name ":")? "..."? expression
+}
+
+memberName {
+  static | Name | VariableName |
+  "{" expression "}"
+}
+
+arrayElement {
+  ("&" | "...")? expression |
+  Pair { expression !pair "=>" "&"? expression }
+}
+
+Attributes {
+  "#[" commaSep1<Attribute> "]"
+}
+
+Attribute {
+  qualifiedName ArgList?
+}
+
+@skip {} {
+  TextInterpolation { PhpClose Text? PhpOpen? }
+
+  Text { textElement+ }
+
+  InterpolatedString { startInterpolatedString interpolatedStringPart* endInterpolatedString }
+
+  interpolatedStringPart {
+    EscapeSequence |
+    interpolatedExpression |
+    Interpolation |
+    interpolatedStringContent
+  }
+
+  // The afterInterpolation token isn't actually real, but used as a
+  // signal (via canShift) to the tokenizer to indicate it shouldn't
+  // consume '[' or '->' tokens.
+  interpolatedExpression {
+    VariableName |
+    MemberExpression {
+      interpolatedExpression afterInterpolation? "->" Name
+    } |
+    SubscriptExpression {
+      interpolatedExpression afterInterpolation? "[" (Integer | UnaryOpExpression { ArithOp<"-"> Integer } | Name | VariableName) "]"
+    }
+  }
+}
+
+Interpolation { "{" expression "}" }
+
+string {
+  InterpolatedString |
+  HeredocString |
+  String
+}
+
+BinaryExpression {
+  expression !instanceof instanceof expression |
+  expression !qq LogicOp<"@"> expression |
+  expression !and and expression |
+  expression !or or expression |
+  expression !xor xor expression |
+  expression !logOr LogicOp<"||"> expression |
+  expression !logAnd LogicOp<"&&"> expression |
+  expression !binOr BitOp<"|"> expression |
+  expression !binXor BitOp<"^"> expression |
+  expression !binAnd BitOp { "&" } expression |
+  expression !equal CompareOp<"==" | "===" | "!=" | "!==" | "<>" | "<=>"> expression |
+  expression !compare CompareOp<"<" | ">" | "<=" | ">="> expression |
+  expression !shift BitOp<"<<" | ">>"> expression |
+  expression !plus ArithOp<"+" | "-"> expression |
+  expression !concat ArithOp<"."> expression |
+  expression !mult ArithOp<"*" | "/" | "%"> expression |
+  expression !exponent ArithOp<"**"> expression
+}
+
+semicolon {
+  automaticSemicolon |
+  ";"
+}
+
+@skip { LineComment | BlockComment | whitespace | TextInterpolation }
+
+@external specialize {Name} keywords from "./tokens" {
+  abstract, and, array, as, Boolean, break, case, catch, class, clone, const, continue, default, declare, do,
+  echo, else, elseif, enddeclare, endfor, endforeach, endif, endswitch, endwhile, enum, extends,
+  final, finally, fn, for, foreach, from, function, global, goto, if, implements, include,
+  include_once, instanceof, insteadof, interface, list, match, namespace, new, null, or, print, require,
+  require_once, return, static, switch, throw, trait, try, unset, use, var, Visibility,
+  while, xor, yield
+}
+
+commaSep<content> { "" | content ("," content?)* }
+commaSep1<content> { content ("," content?)* }
+
+@external tokens expression from "./tokens" {
+  castOpen[@name="("],
+  HeredocString
+}
+
+@external tokens interpolated from "./tokens" {
+  interpolatedStringContent,
+  EscapeSequence,
+  afterInterpolation
+}
+
+@external tokens semicolon from "./tokens" { automaticSemicolon }
+
+@tokens {
+  whitespace { $[ \t\n\r﻿⁠​ ]+ }
+
+  PhpOpen { "<?" ($[pP] $[hH] $[pP] | "=")? }
+
+  PhpClose { "?>" }
+
+  textElement {
+    "\n" | ![\n<] textElement? | "<" textLess
+  }
+
+  textLess {
+    "\n" | ![\n\?] textElement?
+  }
+
+  digit { $[0-9] }
+  hex { $[0-9A-Fa-f] }
+  oct { $[0-7] }
+
+  separatedDigits { ("_" digit+)* }
+
+  exponent { $[eE] $[+-]? digit+ separatedDigits }
+
+  Float {
+    digit+ separatedDigits ("." digit* separatedDigits exponent? | exponent) |
+    "." digit+ separatedDigits exponent?
+  }
+
+  Integer {
+    digit+ separatedDigits |
+    "0" $[oO] oct+ ("_" oct+)* |
+    "0" $[xX] hex+ ("_" hex+)* |
+    "0" $[bB] $[01]+ ("_" $[01]+)*
+  }
+
+  @precedence { Float, ArithOp<".">, Integer }
+
+  ShellCommandExpression { "`" ("\\" _ | ![`\\])* "`" }
+
+  UpdateOp { ("**" | "*" | "/" | "%" | "+" | "-" | "." | "<<" | ">>" | "&" | "^" | "|" | "??") "=" }
+
+  CompareOp<term> { term }
+  ArithOp<term> { term }
+  LogicOp<term> { term }
+  BitOp<term> { term }
+
+  startInterpolatedString { $[bB]? '"' }
+  endInterpolatedString { '"' }
+
+  @precedence { startInterpolatedString, Name }
+
+  String { $[bB]? "'" (![\\'] | "\\" _)* "'"? }
+
+  @precedence { String, Name }
+
+  letter { $[_a-zA-Z\u00A1-\u00ff] }
+
+  Name { letter (letter | std.digit)* }
+
+  VariableName { "$" Name }
+
+  LineComment { ("//" | "#") lineCommentRest? }
+  lineCommentRest { ![\r\n<] lineCommentRest? | "<" lineCommentLess }
+  lineCommentLess { $[\r\n] | ![?\r\n] lineCommentRest? }
+
+  @precedence { "#[", LineComment, ArithOp<"*" | "/" | "%"> }
+
+  BlockComment { "/*" blockCommentRest }
+  blockCommentRest { ![*] blockCommentRest | "*" blockCommentAfterStar }
+  blockCommentAfterStar { "/" | "*" blockCommentAfterStar | ![/*] blockCommentRest }
+
+  "{" "}" "#[" "[" "]" "(" ")"
+  ";" ":" "::" "," "\\" "?->" "->" "=>" "&" "..."
+  "="[@name=AssignOp]
+}
+
+@external tokens eofToken from "./tokens" { eof }
+
+@detectDelim
