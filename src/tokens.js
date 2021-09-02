@@ -170,7 +170,8 @@ function scanEscape(input) {
   let after = input.peek(1)
   if (after == 110 /* 'n' */ || after == 114 /* 'r' */ || after == 116 /* 't' */ ||
       after == 118 /* 'v' */ || after == 101 /* 'e' */ || after == 102 /* 'f' */ ||
-      after == 92 /* '\\' */ || after == 36 /* '"' */ || after == 34 /* '$' */)
+      after == 92 /* '\\' */ || after == 36 /* '"' */ || after == 34 /* '$' */ ||
+      after == 123 /* '{' */)
     return 2
 
   if (after >= 48 && after <= 55 /* '0'-'7' */) {
@@ -198,7 +199,7 @@ export const interpolated = new ExternalTokenizer((input, stack) => {
   let content = false
   for (;; content = true) {
     if (input.next == 34 /* '"' */ || input.next < 0 ||
-        input.next == 36 /* '$' */ && isIdentifierStart(input.peek(1)) ||
+        input.next == 36 /* '$' */ && (isIdentifierStart(input.peek(1)) || input.peek(1) == 123 /* '{' */) ||
         input.next == 123 /* '{' */ && input.peek(1) == 36 /* '$' */) {
       break
     } else if (input.next == 92 /* '\\' */) {
@@ -209,7 +210,7 @@ export const interpolated = new ExternalTokenizer((input, stack) => {
       }
     } else if (!content && (input.next == 91 /* '[' */ || input.next == 45 /* '-' */) &&
                stack.canShift(afterInterpolation) &&
-               (input.next == 45 || input.peek(1) == 62 /* '>' */ && isIdentifierStart(input.peek(2)))) {
+               (input.next == 91 || input.peek(1) == 62 /* '>' */ && isIdentifierStart(input.peek(2)))) {
       break
     }
     input.advance()

@@ -83,7 +83,7 @@ Template(
 
 Template(
   TextInterpolation(PhpOpen),
-  EchoStatement(echo, BinaryExpression(String(EscapeSequence, EscapeSequence, EscapeSequence), ArithOp, String)),
+  EchoStatement(echo, BinaryExpression(String(EscapeSequence, EscapeSequence, EscapeSequence), ConcatOp, String)),
   TextInterpolation(PhpClose))
 
 # Shell command
@@ -140,15 +140,15 @@ Template(
   ExpressionStatement(
     CallExpression(
       Name,
-      ArgList(Argument(HeredocString))
+      ArgList(HeredocString)
     )
   ),
   ExpressionStatement(
     CallExpression(
       Name,
       ArgList(
-        Argument(HeredocString),
-        Argument(Boolean)
+        HeredocString,
+        Boolean
       )
     )
   )

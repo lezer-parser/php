@@ -41,7 +41,7 @@
 
 @skip {} {
   @top Template {
-    TextInterpolation { Text? PhpOpen } (LineComment | BlockComment | whitespace)* topStatements |
+    TextInterpolation { Text? PhpOpen } (LineComment | BlockComment | whitespace | TextInterpolation)* topStatements |
     Text?
   }
 }
@@ -124,7 +124,7 @@ statement[@isGroup=Statement] {
     Attributes* enum Name (":" type)? ClassInterfaceClause? EnumDeclarationList
   } |
   NamespaceDefinition {
-    namespace (namespaceName semicolon | namespaceName? Block)
+    namespace (qualifiedName semicolon | qualifiedName? Block)
   } |
   NamespaceUseDeclaration {
     use (function | const)? (commaSep1<NamespaceUseClause> | "\\"? (Name !namespace "\\")* NamespaceUseGroup) semicolon
@@ -153,13 +153,6 @@ qualifiedName {
   }
 }
 
-namespaceName {
-  Name |
-  QualifiedName {
-    (Name !namespace "\\")+ Name
-  }
-}
-
 NamespaceAliasingClause {
   as Name
 }
@@ -169,7 +162,7 @@ NamespaceUseGroup {
 }
 
 NamespaceUseGroupClause {
-  (function | const)? namespaceName NamespaceAliasingClause?
+  (function | const)? qualifiedName NamespaceAliasingClause?
 }
 
 BaseClause {
@@ -352,11 +345,13 @@ ParenthesizedExpression { "(" expression ")" }
 ScopedExpression { expression !scope "::" (Name | VariableName) }
 
 ArgList {
-  "(" commaSep<Argument> ")"
+  "(" commaSep<argument> ")"
 }
 
-Argument {
-  (Name ":")? "..."? expression
+argument {
+  NamedArgument { Name ":" expression } |
+  SpreadArgument { "..." expression? } |
+  expression
 }
 
 memberName {
@@ -378,19 +373,17 @@ Attribute {
 }
 
 @skip {} {
-  TextInterpolation { PhpClose Text? PhpOpen? }
+  TextInterpolation { PhpClose Text? (PhpOpen | eof) }
 
   Text { textElement+ }
 
   InterpolatedString[@name=String] {
-    startInterpolatedString interpolatedStringPart* endInterpolatedString
-  }
-
-  interpolatedStringPart {
-    EscapeSequence |
-    interpolatedExpression |
-    Interpolation |
-    interpolatedStringContent
+    startInterpolatedString (
+      interpolatedStringContent |
+      EscapeSequence |
+      interpolatedExpression |
+      Interpolation
+    )* endInterpolatedString
   }
 
   // The afterInterpolation token isn't actually real, but used as a
@@ -402,12 +395,13 @@ Attribute {
       interpolatedExpression afterInterpolation? "->" Name
     } |
     SubscriptExpression {
-      interpolatedExpression afterInterpolation? "[" (Integer | UnaryOpExpression { ArithOp<"-"> Integer } | Name | VariableName) "]"
+      interpolatedExpression afterInterpolation?
+      "[" (Integer | UnaryOpExpression { ArithOp<"-"> Integer } | Name | VariableName) "]"
     }
   }
 }
 
-Interpolation { "{" expression "}" }
+Interpolation { ("{" | "${") expression "}" }
 
 string {
   InterpolatedString |
@@ -430,7 +424,7 @@ BinaryExpression {
   expression !compare CompareOp<"<" | ">" | "<=" | ">="> expression |
   expression !shift BitOp<"<<" | ">>"> expression |
   expression !plus ArithOp<"+" | "-"> expression |
-  expression !concat ArithOp<"."> expression |
+  expression !concat ConcatOp<"."> expression |
   expression !mult ArithOp<"*" | "/" | "%"> expression |
   expression !exponent ArithOp<"**"> expression
 }
@@ -513,7 +507,7 @@ static { @extend[@name=static]<Name, "static" | "STATIC"> }
     "0" $[bB] $[01]+ ("_" $[01]+)*
   }
 
-  @precedence { Float, ArithOp<".">, Integer }
+  @precedence { Float, ConcatOp<".">, Integer }
 
   ShellCommandExpression { "`" ("\\" _ | ![`\\])* "`" }
 
@@ -524,6 +518,7 @@ static { @extend[@name=static]<Name, "static" | "STATIC"> }
   LogicOp<term> { term }
   BitOp<term> { term }
   ControlOp<term> { term }
+  ConcatOp<term> { term }
 
   startInterpolatedString { $[bB]? '"' }
   endInterpolatedString { '"' }
@@ -543,8 +538,8 @@ static { @extend[@name=static]<Name, "static" | "STATIC"> }
   @precedence { VariableName, "${", "$" }
 
   LineComment { ("//" | "#") lineCommentRest? }
-  lineCommentRest { ![\r\n<] lineCommentRest? | "<" lineCommentLess }
-  lineCommentLess { $[\r\n] | ![?\r\n] lineCommentRest? }
+  lineCommentRest { ![\r\n?] lineCommentRest? | "?" lineCommentQuestion }
+  lineCommentQuestion { $[\r\n] | ![>\r\n] lineCommentRest? }
 
   @precedence { "#[", LineComment, ArithOp<"*" | "/" | "%"> }
 

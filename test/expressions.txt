@@ -128,7 +128,7 @@ Template(
     VariableName,
     AssignOp,
     NewExpression(new, Name, ArgList(
-        Argument(CallExpression(MemberExpression(VariableName, Name), ArgList)))))))
+        CallExpression(MemberExpression(VariableName, Name), ArgList))))))
 
 # Scoped self call expressions
 
@@ -271,11 +271,7 @@ Template(
       AssignOp,
       CallExpression(
         ScopedExpression(Name, Name),
-        ArgList(
-          Argument(
-            VariableName
-          )
-        )
+        ArgList(VariableName)
       )
     )
   )
@@ -427,11 +423,11 @@ Template(
     UpdateExpression(
       VariableName,
       UpdateOp,
-      BinaryExpression(String, ArithOp, String))),
+      BinaryExpression(String, ConcatOp, String))),
   ExpressionStatement(
     BinaryExpression(
       String,
-      ArithOp,
+      ConcatOp,
       UpdateExpression(
         VariableName,
         UpdateOp,
@@ -587,7 +583,7 @@ Template(
   ExpressionStatement(
     BinaryExpression(
       String,
-      ArithOp,
+      ConcatOp,
       BinaryExpression(
         String,
         ArithOp,
@@ -611,17 +607,14 @@ Template(
   TextInterpolation(PhpOpen),
   ExpressionStatement(CallExpression(
     Name,
-    ArgList(
-      Argument(
-        ArrayExpression(Integer, Integer, Integer))))),
+    ArgList(ArrayExpression(Integer, Integer, Integer)))),
   ExpressionStatement(
     CallExpression(
       Name,
       ArgList(
-        Argument(
-          ArrayExpression(Pair(String, String),
-                          Pair(String, String),
-                          Pair(String, String)))))),
+        ArrayExpression(Pair(String, String),
+                        Pair(String, String),
+                        Pair(String, String))))),
   ExpressionStatement(
     AssignmentExpression(
       VariableName,
@@ -649,37 +642,33 @@ Template(
     CallExpression(
       Name,
       ArgList(
-        Argument(
-          FunctionExpression(function,
-            ParamList,
-            Block(
-              EchoStatement(echo, String))))))),
+        FunctionExpression(function,
+          ParamList,
+          Block(EchoStatement(echo, String)))))),
   ExpressionStatement(
     CallExpression(
       Name,
       ArgList(
-        Argument(
-          FunctionExpression(function,
-            ParamList(SimpleParameter(VariableName)),
-            use, VariableName,
-            Block(ExpressionStatement(UpdateExpression(
-              VariableName,
-              UpdateOp,
-              VariableName))))),
-        Argument(Integer)))),
+        FunctionExpression(function,
+          ParamList(SimpleParameter(VariableName)),
+          use, VariableName,
+          Block(ExpressionStatement(UpdateExpression(
+            VariableName,
+            UpdateOp,
+            VariableName)))),
+        Integer))),
   ExpressionStatement(
     CallExpression(
       Name,
       ArgList(
-        Argument(
-          FunctionExpression(function,
-            ParamList(SimpleParameter(VariableName)),
-            use, VariableName,
-            Block(ExpressionStatement(UpdateExpression(
-              VariableName,
-              UpdateOp,
-              VariableName))))),
-        Argument(Integer)))))
+        FunctionExpression(function,
+          ParamList(SimpleParameter(VariableName)),
+          use, VariableName,
+          Block(ExpressionStatement(UpdateExpression(
+            VariableName,
+            UpdateOp,
+            VariableName)))),
+        Integer))))
 
 # Throw expressions
 
@@ -709,7 +698,7 @@ Template(
   TextInterpolation(PhpOpen),
   ExpressionStatement(
     ThrowExpression(throw,
-      NewExpression(new, Name, ArgList(Argument(Name))
+      NewExpression(new, Name, ArgList(Name)
       )
     )
   ),
@@ -719,9 +708,9 @@ Template(
       AssignOp,
       ConditionalExpression(
         UnaryOpExpression(LogicOp,
-          CallExpression(Name, ArgList(Argument(VariableName)))),
+          CallExpression(Name, ArgList(VariableName))),
         LogicOp,
-        CallExpression(Name, ArgList(Argument(VariableName))),
+        CallExpression(Name, ArgList(VariableName)),
         ThrowExpression(throw,
           NewExpression(new, Name, ArgList))
       )
@@ -851,7 +840,7 @@ Template(
   ExpressionStatement(
     CallExpression(
       MemberExpression(VariableName, Name),
-      ArgList(Argument(VariableName))
+      ArgList(VariableName)
     )
   ),
   ExpressionStatement(
@@ -908,7 +897,7 @@ Template(
           ),
           MatchArm(
             default,
-            CallExpression(MemberExpression(VariableName, Name), ArgList(Argument(String)))
+            CallExpression(MemberExpression(VariableName, Name), ArgList(String))
           )
         )
       )
@@ -1008,9 +997,9 @@ Template(
     CallExpression(
       Name,
       ArgList(
-        Argument(Name, Integer),
-        Argument(Name, Integer),
-        Argument(Name, VariableName)
+        NamedArgument(Name, Integer),
+        NamedArgument(Name, Integer),
+        NamedArgument(Name, VariableName)
       )
     )
   )
@@ -1028,5 +1017,5 @@ Template(
   ExpressionStatement(
     BinaryExpression(
       VariableName,
-      ArithOp,
+      ConcatOp,
       BinaryExpression(VariableName, BitOp, VariableName))))
