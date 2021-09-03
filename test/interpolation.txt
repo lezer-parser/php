@@ -141,7 +141,7 @@ Template(
   LineComment,
   IfStatement(if,
     ParenthesizedExpression(
-      UnaryOpExpression(LogicOp, CallExpression(Name,ArgList(String)))
+      UnaryExpression(LogicOp, CallExpression(Name,ArgList(String)))
     ),
     Block(EchoStatement(echo,VariableName))
   )

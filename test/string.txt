@@ -192,7 +192,7 @@ Template(
 <?php
 
 "$people->john drank some $juices[0] juice.".PHP_EOL;
-"$people->john then said hello to $people->jane.".PHP_EOL;
+"$people->john then said hello to $people?->jane.".PHP_EOL;
 "$people->john's wife greeted $people->robert.";
 "The character at index -2 is $string[-2].";
 
@@ -228,7 +228,7 @@ Template(
   ),
   ExpressionStatement(
     String(
-      SubscriptExpression(VariableName,UnaryOpExpression(ArithOp,Integer)),
+      SubscriptExpression(VariableName,UnaryExpression(ArithOp,Integer)),
     )
   )
 )

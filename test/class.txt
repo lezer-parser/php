@@ -78,7 +78,7 @@ Template(
       DeclarationList(
         PropertyDeclaration(
           Visibility,
-          PropertyDeclarator(
+          VariableDeclarator(
             VariableName
           )
         )
@@ -109,7 +109,7 @@ Template(
               BaseClause(extends, Name),
               DeclarationList(
                 ConstDeclaration(const,
-                  ConstDeclarator(Name, AssignOp, String)
+                  VariableDeclarator(Name, AssignOp, String)
                 )
               )
             )
@@ -163,19 +163,19 @@ Template(
     Name,
     DeclarationList(
       ConstDeclaration(const,
-        ConstDeclarator(Name, AssignOp, Integer)
+        VariableDeclarator(Name, AssignOp, Integer)
       ),
       ConstDeclaration(Visibility, const,
-        ConstDeclarator(Name, AssignOp, Integer)
+        VariableDeclarator(Name, AssignOp, Integer)
       ),
       ConstDeclaration(Visibility, const,
-        ConstDeclarator(Name, AssignOp, Integer)
+        VariableDeclarator(Name, AssignOp, Integer)
       ),
       ConstDeclaration(Visibility, const,
-        ConstDeclarator(Name, AssignOp, Integer)
+        VariableDeclarator(Name, AssignOp, Integer)
       ),
       ConstDeclaration(final, const,
-        ConstDeclarator(Name, AssignOp, Integer)
+        VariableDeclarator(Name, AssignOp, Integer)
       )
     )
   )
@@ -220,11 +220,11 @@ Template(
     DeclarationList(
       PropertyDeclaration(
         var,
-        PropertyDeclarator(VariableName)
+        VariableDeclarator(VariableName)
       ),
       PropertyDeclaration(
         static,
-        PropertyDeclarator(VariableName)
+        VariableDeclarator(VariableName)
       ),
       MethodDeclaration(abstract, function,
         Name,
@@ -275,22 +275,22 @@ Template(
       PropertyDeclaration(
         Visibility,
         NamedType(Name),
-        PropertyDeclarator(VariableName)
+        VariableDeclarator(VariableName)
       ),
       PropertyDeclaration(
         Visibility,
         static,
         NamedType(Name),
-        PropertyDeclarator(VariableName)
+        VariableDeclarator(VariableName)
       ),
       PropertyDeclaration(
         Visibility,
         OptionalType(LogicOp, NamedType(Name)),
-        PropertyDeclarator(VariableName)
+        VariableDeclarator(VariableName)
       ),
       PropertyDeclaration(
         Visibility,
-        PropertyDeclarator(VariableName)
+        VariableDeclarator(VariableName)
       )
     )
   )
@@ -318,20 +318,20 @@ Template(
       MethodDeclaration(Visibility, function,
         Name,
         ParamList(
-          PropertyPromotionParameter(
+          PropertyParameter(
             Visibility,
             NamedType(Name),
             VariableName,
             AssignOp,
             Float
           ),
-          SimpleParameter(
+          Parameter(
             NamedType(Name),
             VariableName,
             AssignOp,
             Float
           ),
-          PropertyPromotionParameter(
+          PropertyParameter(
             Visibility,
             NamedType(Name),
             VariableName,

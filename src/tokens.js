@@ -208,9 +208,11 @@ export const interpolated = new ExternalTokenizer((input, stack) => {
         if (content) break
         else return input.acceptToken(EscapeSequence, escaped)
       }
-    } else if (!content && (input.next == 91 /* '[' */ || input.next == 45 /* '-' */) &&
-               stack.canShift(afterInterpolation) &&
-               (input.next == 91 || input.peek(1) == 62 /* '>' */ && isIdentifierStart(input.peek(2)))) {
+    } else if (!content && (
+      input.next == 91 /* '[' */ ||
+      input.next == 45 /* '-' */ && input.peek(1) == 62 /* '>' */ && isIdentifierStart(input.peek(2)) ||
+      input.next == 63 /* '?' */ && input.peek(1) == 45 && input.peek(2) == 62 && isIdentifierStart(input.peek(3))
+    ) && stack.canShift(afterInterpolation)) {
       break
     }
     input.advance()

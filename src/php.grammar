@@ -127,18 +127,14 @@ statement[@isGroup=Statement] {
     namespace (qualifiedName semicolon | qualifiedName? Block)
   } |
   NamespaceUseDeclaration {
-    use (function | const)? (commaSep1<NamespaceUseClause> | "\\"? (Name !namespace "\\")* NamespaceUseGroup) semicolon
+    use (function | const)? (commaSep1<NamespaceUseClause> | "\\"? (NamespaceName !namespace "\\")* NamespaceUseGroup) semicolon
   } |
   GlobalDeclaration {
     global commaSep1<expression> semicolon
   } |
   FunctionStaticDeclaration {
-    static commaSep1<StaticVariableDeclaration> semicolon
+    static commaSep1<VariableDeclarator> semicolon
   }
-}
-
-StaticVariableDeclaration {
-  VariableName ("=" expression)?
 }
 
 NamespaceUseClause {
@@ -148,14 +144,16 @@ NamespaceUseClause {
 qualifiedName {
   Name |
   QualifiedName {
-    "\\" (Name !namespace "\\")* Name |
-    (Name !namespace "\\")+ Name
+    "\\" (NamespaceName !namespace "\\")* Name |
+    (NamespaceName !namespace "\\")+ Name
   }
 }
 
 NamespaceAliasingClause {
   as Name
 }
+
+NamespaceName { Name }
 
 NamespaceUseGroup {
   "{" commaSep1<NamespaceUseGroupClause> "}"
@@ -187,7 +185,7 @@ ClassInterfaceClause {
 
 memberDeclaration {
   ConstDeclaration { Attributes* modifier* const commaSep1<ConstDeclarator> semicolon } |
-  PropertyDeclaration { Attributes* modifier* type? commaSep1<PropertyDeclarator> semicolon } |
+  PropertyDeclaration { Attributes* modifier* type? commaSep1<VariableDeclarator> semicolon } |
   MethodDeclaration |
   UseDeclaration
 }
@@ -200,13 +198,9 @@ modifier {
   abstract
 }
 
-PropertyDeclarator {
-  VariableName PropertyInitializer?
-}
+VariableDeclarator { VariableName ("=" expression)? }
 
-PropertyInitializer {
-  "=" expression
-}
+ConstDeclarator[@name=VariableDeclarator] { Name "=" expression }
 
 MethodDeclaration {
   Attributes* modifier* functionDefinitionHeader (Block | semicolon)
@@ -233,19 +227,19 @@ functionDefinitionHeader {
 }
 
 ParamList {
-  "(" commaSep<SimpleParameter | VariadicParameter | PropertyPromotionParameter> ")"
+  "(" commaSep<parameter> ")"
 }
 
-PropertyPromotionParameter {
-  Visibility type? VariableName ("=" expression)?
-}
-
-SimpleParameter {
-  Attributes* type? "&"? VariableName ("=" expression)?
-}
-
-VariadicParameter {
-  Attributes* type? "&"? "..." VariableName
+parameter {
+  Parameter {
+    Attributes* type? "&"? VariableName ("=" expression)?
+  } |
+  VariadicParameter {
+    Attributes* type? "&"? "..." VariableName
+  } |
+  PropertyParameter {
+    Visibility type? VariableName ("=" expression)?
+  }
 }
 
 type[@isGroup=Type] {
@@ -255,10 +249,6 @@ type[@isGroup=Type] {
 }
 
 NamedType { qualifiedName }
-
-ConstDeclarator {
-  Name "=" expression
-}
 
 literal {
   Integer |
@@ -279,8 +269,6 @@ ColonBlock { ":" statement* }
 
 MatchArm { (default | commaSep1<expression>) "=>" expression }
 
-
-
 CaseStatement { case expression (":" | ";") statement* }
 
 DefaultStatement { default (":" | ";") statement* }
@@ -297,7 +285,7 @@ expression[@isGroup=Expression] {
   IncludeExpression { (include | include_once) expression } |
   RequireExpression { (require | require_once) expression } |
   CloneExpression { clone expression } |
-  UnaryOpExpression {
+  UnaryExpression {
     ControlOp<"@"> expression |
     (ArithOp<"+" | "-"> | LogicOp<"~" | "!">) !unary expression
   } |
@@ -393,11 +381,11 @@ Attribute {
   interpolatedExpression {
     VariableName |
     MemberExpression {
-      interpolatedExpression afterInterpolation? "->" Name
+      interpolatedExpression afterInterpolation? ("?->" | "->") Name
     } |
     SubscriptExpression {
       interpolatedExpression afterInterpolation?
-      "[" (Integer | UnaryOpExpression { ArithOp<"-"> Integer } | Name | VariableName) "]"
+      "[" (Integer | UnaryExpression { ArithOp<"-"> Integer } | Name | VariableName) "]"
     }
   }
 }

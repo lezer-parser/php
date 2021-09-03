@@ -38,7 +38,7 @@ Template(
       AssignOp,
       Integer)),
   EchoStatement(echo,
-    BinaryExpression(VariableName, ArithOp, UnaryOpExpression(ArithOp, VariableName))
+    BinaryExpression(VariableName, ArithOp, UnaryExpression(ArithOp, VariableName))
   ),
   ExpressionStatement(
     BinaryExpression(
@@ -90,7 +90,7 @@ if (!$foo = $bar) {
 Template(
   TextInterpolation(PhpOpen),
   IfStatement(if,
-    ParenthesizedExpression(UnaryOpExpression(LogicOp,
+    ParenthesizedExpression(UnaryExpression(LogicOp,
       AssignmentExpression(
         VariableName,
         AssignOp,
@@ -382,11 +382,11 @@ Template(
   TextInterpolation(PhpOpen),
   ExpressionStatement(
     BinaryExpression(
-      UnaryOpExpression(ArithOp, Integer),
+      UnaryExpression(ArithOp, Integer),
       ArithOp,
-      UnaryOpExpression(ArithOp, Integer))),
+      UnaryExpression(ArithOp, Integer))),
   ExpressionStatement(
-    UnaryOpExpression(LogicOp,
+    UnaryExpression(LogicOp,
       BinaryExpression(VariableName, LogicOp, Name))),
   TextInterpolation(PhpClose))
 
@@ -650,7 +650,7 @@ Template(
       Name,
       ArgList(
         FunctionExpression(function,
-          ParamList(SimpleParameter(VariableName)),
+          ParamList(Parameter(VariableName)),
           use, VariableName,
           Block(ExpressionStatement(UpdateExpression(
             VariableName,
@@ -662,7 +662,7 @@ Template(
       Name,
       ArgList(
         FunctionExpression(function,
-          ParamList(SimpleParameter(VariableName)),
+          ParamList(Parameter(VariableName)),
           use, VariableName,
           Block(ExpressionStatement(UpdateExpression(
             VariableName,
@@ -707,7 +707,7 @@ Template(
       VariableName,
       AssignOp,
       ConditionalExpression(
-        UnaryOpExpression(LogicOp,
+        UnaryExpression(LogicOp,
           CallExpression(Name, ArgList(VariableName))),
         LogicOp,
         CallExpression(Name, ArgList(VariableName)),
@@ -925,7 +925,7 @@ Template(
   ExpressionStatement(
     ArrowFunction(fn,
       ParamList(
-        SimpleParameter(
+        Parameter(
           NamedType(Name),
           VariableName
         )
@@ -936,7 +936,7 @@ Template(
   ExpressionStatement(
     ArrowFunction(fn,
       ParamList(
-        SimpleParameter(
+        Parameter(
           VariableName,
           AssignOp,
           Integer)
@@ -946,20 +946,20 @@ Template(
   ),
   ExpressionStatement(
     ArrowFunction(static, fn,
-      ParamList(SimpleParameter(VariableName)),
+      ParamList(Parameter(VariableName)),
       VariableName
     )
   ),
   ExpressionStatement(
     ArrowFunction(fn,
-      ParamList(SimpleParameter(VariableName)),
+      ParamList(Parameter(VariableName)),
       VariableName
     )
   ),
   ExpressionStatement(
     ArrowFunction(fn,
       ParamList(
-        SimpleParameter(VariableName),
+        Parameter(VariableName),
         VariadicParameter(VariableName)),
         VariableName)),
   ExpressionStatement(
@@ -975,7 +975,7 @@ Template(
       AssignOp,
       ArrowFunction(fn,
         ParamList(
-          SimpleParameter(VariableName)
+          Parameter(VariableName)
         ),
         BinaryExpression(VariableName, ArithOp, VariableName)
       )
