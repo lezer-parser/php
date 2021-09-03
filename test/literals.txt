@@ -96,8 +96,8 @@ Template(
 
 Template(
   TextInterpolation(PhpOpen),
-  ExpressionStatement(ShellCommandExpression),
-  ExpressionStatement(ShellCommandExpression))
+  ExpressionStatement(ShellExpression),
+  ExpressionStatement(ShellExpression))
 
 # Heredocs
 

@@ -296,7 +296,7 @@ expression[@isGroup=Expression] {
     expression !incdec ArithOp<"++" | "--"> |
     ArithOp<"++" | "--"> !incdec expression
   } |
-  ShellCommandExpression |
+  ShellExpression |
   ParenthesizedExpression |
   ThrowExpression { throw expression } |
   variable |
@@ -457,9 +457,9 @@ static[@dynamicPrecedence=1] { @extend[@name=static]<Name, "static" | "STATIC"> 
 @tokens {
   whitespace { $[ \t\n\r﻿⁠​ ]+ }
 
-  PhpOpen { "<?" ($[pP] $[hH] $[pP] | "=")? }
+  PhpOpen[closedBy=phpClose] { "<?" ($[pP] $[hH] $[pP] | "=")? }
 
-  PhpClose { "?>" }
+  PhpClose[openedBy=phpOpen] { "?>" }
 
   textElement {
     "\n" | ![\n<] textElement? | "<" textLess
@@ -491,7 +491,7 @@ static[@dynamicPrecedence=1] { @extend[@name=static]<Name, "static" | "STATIC"> 
 
   @precedence { Float, ConcatOp<".">, Integer }
 
-  ShellCommandExpression { "`" ("\\" _ | ![`\\])* "`" }
+  ShellExpression { "`" ("\\" _ | ![`\\])* "`" }
 
   UpdateOp { ("**" | "*" | "/" | "%" | "+" | "-" | "." | "<<" | ">>" | "&" | "^" | "|" | "??") "=" }
 
