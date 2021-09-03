@@ -106,7 +106,7 @@ statement[@isGroup=Statement] {
     unset "(" commaSep1<expression> ")" semicolon
   } |
   ConstDeclaration {
-    Attributes* Visibility? const commaSep1<ConstElement> semicolon
+    Attributes* Visibility? const commaSep1<ConstDeclarator> semicolon
   } |
   FunctionDefinition {
     Attributes* functionDefinitionHeader Block
@@ -186,8 +186,8 @@ ClassInterfaceClause {
 }
 
 memberDeclaration {
-  ConstDeclaration { Attributes* modifier* const commaSep1<ConstElement> semicolon } |
-  PropertyDeclaration { Attributes* modifier* type? commaSep1<PropertyElement> semicolon } |
+  ConstDeclaration { Attributes* modifier* const commaSep1<ConstDeclarator> semicolon } |
+  PropertyDeclaration { Attributes* modifier* type? commaSep1<PropertyDeclarator> semicolon } |
   MethodDeclaration |
   UseDeclaration
 }
@@ -195,11 +195,12 @@ memberDeclaration {
 modifier {
   var |
   Visibility |
+  static |
   final |
   abstract
 }
 
-PropertyElement {
+PropertyDeclarator {
   VariableName PropertyInitializer?
 }
 
@@ -255,7 +256,7 @@ type[@isGroup=Type] {
 
 NamedType { qualifiedName }
 
-ConstElement {
+ConstDeclarator {
   Name "=" expression
 }
 
@@ -457,7 +458,7 @@ semicolon {
 commaSep<content> { "" | content ("," content?)* }
 commaSep1<content> { content ("," content?)* }
 
-static { @extend[@name=static]<Name, "static" | "STATIC"> }
+static[@dynamicPrecedence=1] { @extend[@name=static]<Name, "static" | "STATIC"> }
 
 @external tokens expression from "./tokens" {
   castOpen[@name="("],
