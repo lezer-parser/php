@@ -131,14 +131,16 @@ endfor;
 Template(
   TextInterpolation(PhpOpen),
   ForStatement(for,
-    AssignmentExpression(VariableName, AssignOp, Integer),
-    BinaryExpression(VariableName, CompareOp, Integer),
-    UpdateExpression(VariableName, ArithOp),
+    ForSpec(
+      AssignmentExpression(VariableName, AssignOp, Integer),
+      BinaryExpression(VariableName, CompareOp, Integer),
+      UpdateExpression(VariableName, ArithOp)),
     EchoStatement(echo,VariableName)),
   ForStatement(for,
-    AssignmentExpression(VariableName, AssignOp, Integer),
-    BinaryExpression(VariableName, CompareOp, Integer),
-    UpdateExpression(VariableName, ArithOp),
+    ForSpec(
+      AssignmentExpression(VariableName, AssignOp, Integer),
+      BinaryExpression(VariableName, CompareOp, Integer),
+      UpdateExpression(VariableName, ArithOp)),
     ColonBlock(EchoStatement(echo,VariableName)),
     endfor))
 
@@ -263,12 +265,12 @@ Template(
   TextInterpolation(PhpOpen),
   TryStatement(
     try, Block,
-    catch, NamedType(Name), Block,
-    catch, UnionType(NamedType(Name), LogicOp, NamedType(Name)), VariableName, Block,
+    catch, CatchDeclarator(NamedType(Name)), Block,
+    catch, CatchDeclarator(UnionType(NamedType(Name), LogicOp, NamedType(Name)), VariableName), Block,
     finally, Block),
   TryStatement(
     try, Block(ExpressionStatement(CallExpression(Name,ArgList))),
-    catch, NamedType(Name), VariableName, Block(
+    catch, CatchDeclarator(NamedType(Name), VariableName), Block(
       ExpressionStatement(PrintIntrinsic(print, BinaryExpression(
         String,
         ConcatOp,
@@ -294,16 +296,16 @@ endforeach;
 Template(
   TextInterpolation(PhpOpen),
   ForeachStatement(foreach,
-    VariableName, as, SubscriptExpression(VariableName, Integer),
+    ForSpec(VariableName, as, SubscriptExpression(VariableName, Integer)),
     Block(
       EchoStatement(echo,BinaryExpression(
         SubscriptExpression(VariableName, Integer),
         ConcatOp,
         String(EscapeSequence))))),
   ForeachStatement(foreach,
-    VariableName, as, Pair(VariableName, VariableName), EmptyStatement),
+    ForSpec(VariableName, as, Pair(VariableName, VariableName)), EmptyStatement),
   ForeachStatement(foreach,
-    VariableName, as, VariableName,
+    ForSpec(VariableName, as, VariableName),
     ColonBlock(
       EchoStatement(echo,VariableName),
       EchoStatement(echo,VariableName)),
@@ -328,7 +330,7 @@ FOREACH ($a AS $b) {
 Template(
   TextInterpolation(PhpOpen),
   ForeachStatement(foreach,
-    VariableName, as, VariableName,
+    ForSpec(VariableName, as, VariableName),
     Block(
       DoStatement(do,
         Block(

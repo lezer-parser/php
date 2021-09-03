@@ -76,11 +76,11 @@ statement[@isGroup=Statement] {
     do statement while ParenthesizedExpression semicolon
   } |
   ForStatement {
-    for "(" expressions? ";" expressions? ";" expressions? ")"
+    for ForSpec { "(" expressions? ";" expressions? ";" expressions? ")" }
     (trailingStatement | ColonBlock endfor semicolon)
   } |
   ForeachStatement {
-    foreach "(" expression as (Pair { expression "=>" expression } | expression) ")"
+    foreach ForSpec { "(" expression as (Pair { expression "=>" expression } | expression) ")" }
     (trailingStatement | ColonBlock endforeach semicolon)
   } |
   GotoStatement {
@@ -96,7 +96,7 @@ statement[@isGroup=Statement] {
     return expression? semicolon
   } |
   TryStatement {
-    try Block (catch "(" type VariableName? ")" Block | finally Block)+
+    try Block (catch CatchDeclarator { "(" type VariableName? ")" } Block | finally Block)+
   } |
   DeclareStatement {
     declare "(" Name "=" literal ")" (trailingStatement | ColonBlock enddeclare semicolon)
@@ -285,7 +285,7 @@ expression[@isGroup=Expression] {
   qualifiedName |
   PrintIntrinsic { print expression } |
   FunctionExpression {
-    static? function "&"? ParamList (use "(" commaSep<"&"? VariableName> ")")? (":" type)? Block
+    static? function "&"? ParamList (use UseList { "(" commaSep<"&"? VariableName> ")" })? (":" type)? Block
   } |
   ArrowFunction { static? fn "&"? ParamList (":" type)? "=>" expression } |
   NewExpression {
@@ -305,11 +305,11 @@ expression[@isGroup=Expression] {
 
 variable {
   ArrayExpression {
-    array "(" ","? commaSep<arrayElement> ")" |
+    array ValueList { "(" ","? commaSep<arrayElement> ")" } |
     "[" ","? commaSep<arrayElement> "]"
   } |
   ListExpression {
-    list "(" ","? commaSep<expression | Pair { expression !pair "=>" expression }> ")"
+    list ValueList { "(" ","? commaSep<expression | Pair { expression !pair "=>" expression }> ")" }
   } |
   SubscriptExpression { expression (!member "[" expression? "]" | !member "{" expression "}") } |
   MemberExpression { expression !member ("->" | "?->") memberName } |

@@ -282,11 +282,7 @@ Template(
     VariableDeclarator(
       Name,
       AssignOp,
-      ArrayExpression(array,
-        String,
-        String,
-        String
-      )
+      ArrayExpression(array, ValueList(String,String,String))
     )
   ),
   ExpressionStatement(
@@ -294,11 +290,7 @@ Template(
       Name,
       ArgList(
         String,
-        ArrayExpression(array,
-          String,
-          String,
-          String
-        )
+        ArrayExpression(array, ValueList(String,String,String))
       )
     )
   )
@@ -396,7 +388,7 @@ Template(
     Attributes(Attribute(QualifiedName(NamespaceName(Name),Name))),
     Attributes(Attribute(Name,ArgList(Integer))),
     Attributes(Attribute(Name,ArgList(ScopedExpression(Name,Name)))),
-    Attributes(Attribute(Name,ArgList(ArrayExpression(array, Pair(String, String))))),
+    Attributes(Attribute(Name,ArgList(ArrayExpression(array, ValueList(Pair(String, String)))))),
     Attributes(Attribute(Name,ArgList(BinaryExpression(Integer, ArithOp, Integer)))),
     class,
     Name,

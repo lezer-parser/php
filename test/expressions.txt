@@ -188,10 +188,7 @@ Template(
   LineComment,
   ExpressionStatement(
     AssignmentExpression(
-      ListExpression(list,
-        VariableName,
-        VariableName
-      ),
+      ListExpression(list, ValueList(VariableName,VariableName)),
       AssignOp,
       SubscriptExpression(
         VariableName,
@@ -202,10 +199,7 @@ Template(
   LineComment,
   ExpressionStatement(
     AssignmentExpression(
-      ListExpression(list,
-        VariableName,
-        VariableName
-      ),
+      ListExpression(list,ValueList(VariableName,VariableName)),
       AssignOp,
       SubscriptExpression(
         VariableName,
@@ -216,9 +210,7 @@ Template(
   LineComment,
   ExpressionStatement(
     AssignmentExpression(
-      ListExpression(list,
-        VariableName
-      ),
+      ListExpression(list,ValueList(VariableName)),
       AssignOp,
       SubscriptExpression(
         VariableName,
@@ -651,7 +643,7 @@ Template(
       ArgList(
         FunctionExpression(function,
           ParamList(Parameter(VariableName)),
-          use, VariableName,
+          use, UseList(VariableName),
           Block(ExpressionStatement(UpdateExpression(
             VariableName,
             UpdateOp,
@@ -663,7 +655,7 @@ Template(
       ArgList(
         FunctionExpression(function,
           ParamList(Parameter(VariableName)),
-          use, VariableName,
+          use, UseList(VariableName),
           Block(ExpressionStatement(UpdateExpression(
             VariableName,
             UpdateOp,
