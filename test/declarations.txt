@@ -435,23 +435,23 @@ Template(
   TextInterpolation(PhpOpen),
   EnumDeclaration(enum,
     Name,
-    EnumDeclarationList
+    EnumBody
   ),
   EnumDeclaration(enum,
     Name,
     ClassInterfaceClause(implements, Name, Name),
-    EnumDeclarationList
+    EnumBody
   ),
   EnumDeclaration(enum,
     Name,
     NamedType(Name),
     ClassInterfaceClause(implements, Name),
-    EnumDeclarationList
+    EnumBody
   ),
   EnumDeclaration(enum,
     Name,
     NamedType(Name),
-    EnumDeclarationList(
+    EnumBody(
       EnumCase(case, Name, AssignOp, String),
       EnumCase(case, Name),
       EnumCase(case, Name, AssignOp, String),

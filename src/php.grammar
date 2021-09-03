@@ -55,12 +55,12 @@ topStatements { statement* eof }
 statement[@isGroup=Statement] {
   EmptyStatement { ";" } |
   Block |
-  NamedLabelStatement { Name ":" } |
+  LabelStatement { Name ":" } |
   ExpressionStatement { expression semicolon } |
   IfStatement {
     if ParenthesizedExpression (
       statement (!else elseif ParenthesizedExpression statement)* (!else else statement)? |
-      ColonBlock (!else elseif ParenthesizedExpression ColonBlock)* (!else else ColonBlock)? endif semicolon
+      ColonBlock (elseif ParenthesizedExpression ColonBlock)* (else ColonBlock)? endif semicolon
     )
   } |
   SwitchStatement {
@@ -70,16 +70,18 @@ statement[@isGroup=Statement] {
     )
   } |
   WhileStatement {
-    while ParenthesizedExpression (statement | ColonBlock endwhile semicolon)
+    while ParenthesizedExpression (trailingStatement | ColonBlock endwhile semicolon)
   } |
   DoStatement {
     do statement while ParenthesizedExpression semicolon
   } |
   ForStatement {
-    for "(" expressions? ";" expressions? ";" expressions? ")" (automaticSemicolon | statement | ColonBlock endfor semicolon)
+    for "(" expressions? ";" expressions? ";" expressions? ")"
+    (trailingStatement | ColonBlock endfor semicolon)
   } |
   ForeachStatement {
-    foreach "(" expression as (ForeachPair | expression) ")" (automaticSemicolon | statement | ColonBlock endforeach semicolon)
+    foreach "(" expression as (Pair { expression "=>" expression } | expression) ")"
+    (trailingStatement | ColonBlock endforeach semicolon)
   } |
   GotoStatement {
     goto Name semicolon
@@ -97,7 +99,7 @@ statement[@isGroup=Statement] {
     try Block (catch "(" type VariableName? ")" Block | finally Block)+
   } |
   DeclareStatement {
-    declare "(" Name "=" literal ")" (statement | ColonBlock enddeclare semicolon | automaticSemicolon)
+    declare "(" Name "=" literal ")" (trailingStatement | ColonBlock enddeclare semicolon)
   } |
   EchoStatement {
     echo expressions semicolon
@@ -121,13 +123,15 @@ statement[@isGroup=Statement] {
     trait Name DeclarationList
   } |
   EnumDeclaration {
-    Attributes* enum Name (":" type)? ClassInterfaceClause? EnumDeclarationList
+    Attributes* enum Name (":" type)? ClassInterfaceClause? EnumBody
   } |
   NamespaceDefinition {
     namespace (qualifiedName semicolon | qualifiedName? Block)
   } |
   NamespaceUseDeclaration {
-    use (function | const)? (commaSep1<NamespaceUseClause> | "\\"? (NamespaceName !namespace "\\")* NamespaceUseGroup) semicolon
+    use (function | const)?
+    (commaSep1<qualifiedName (as Name)?> | "\\"? (NamespaceName !namespace "\\")* UseGroup)
+    semicolon
   } |
   GlobalDeclaration {
     global commaSep1<expression> semicolon
@@ -135,10 +139,6 @@ statement[@isGroup=Statement] {
   FunctionStaticDeclaration {
     static commaSep1<VariableDeclarator> semicolon
   }
-}
-
-NamespaceUseClause {
-  qualifiedName NamespaceAliasingClause?
 }
 
 qualifiedName {
@@ -149,25 +149,17 @@ qualifiedName {
   }
 }
 
-NamespaceAliasingClause {
-  as Name
-}
-
 NamespaceName { Name }
 
-NamespaceUseGroup {
-  "{" commaSep1<NamespaceUseGroupClause> "}"
-}
-
-NamespaceUseGroupClause {
-  (function | const)? qualifiedName NamespaceAliasingClause?
+UseGroup {
+  "{" commaSep1<UseClause { (function | const)? qualifiedName (as Name)? }> "}"
 }
 
 BaseClause {
   extends commaSep1<qualifiedName>
 }
 
-EnumDeclarationList {
+EnumBody {
   "{" (EnumCase | MethodDeclaration | UseDeclaration)* "}"
 }
 
@@ -245,10 +237,8 @@ parameter {
 type[@isGroup=Type] {
   UnionType { type (!unionType LogicOp<"|"> type)+ } |
   OptionalType { !optionalType LogicOp<"?"> type } |
-  NamedType
+  NamedType { qualifiedName | null | array }
 }
-
-NamedType { qualifiedName }
 
 literal {
   Integer |
@@ -263,9 +253,12 @@ expressions {
   SequenceExpression { expression ("," expression)+ }
 }
 
-ForeachPair { expression "=>" expression }
-
 ColonBlock { ":" statement* }
+
+trailingStatement {
+  statement |
+  EmptyStatement { automaticSemicolon }
+}
 
 MatchArm { (default | commaSep1<expression>) "=>" expression }
 
@@ -429,7 +422,7 @@ semicolon {
   abstract[@name=abstract], and[@name=LogicOp], array[@name=array], as[@name=as], Boolean,
   break[@name=break], case[@name=case], catch[@name=catch], class[@name=class],
   clone[@name=clone], const[@name=const], continue[@name=continue], default[@name=default],
-  declare[@name=declare], do[@name=do], echo[@name=echo], else[@name=echo], elseif[@name=elseif],
+  declare[@name=declare], do[@name=do], echo[@name=echo], else[@name=else], elseif[@name=elseif],
   enddeclare[@name=enddeclare], endfor[@name=endfor], endforeach[@name=endforeach],
   endif[@name=endif], endswitch[@name=endswitch], endwhile[@name=endwhile], enum[@name=enum],
   extends[@name=extends], final[@name=final], finally[@name=finally], fn[@name=fn], for[@name=for],
