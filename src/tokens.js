@@ -1,6 +1,6 @@
 import {ExternalTokenizer} from "@lezer/lr"
 import {
-  abstract, and, array, as, Boolean, _break, _case, _catch, _class, clone, _const, _continue,
+  abstract, and, array, as, Boolean, _break, _case, _catch, clone, _const, _continue,
   declare, _default, _do, echo, _else, elseif, enddeclare, endfor, endforeach, endif,
   endswitch, endwhile, _enum, _extends, final, _finally, fn, _for, foreach, from,
   _function, global, goto, _if, _implements, include, include_once, _instanceof,
@@ -22,7 +22,6 @@ const keywordMap = {
   break: _break,
   case: _case,
   catch: _catch,
-  class: _class,
   clone,
   const: _const,
   continue: _continue,

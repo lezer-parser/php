@@ -420,7 +420,7 @@ semicolon {
 
 @external specialize {Name} keywords from "./tokens" {
   abstract[@name=abstract], and[@name=LogicOp], array[@name=array], as[@name=as], Boolean,
-  break[@name=break], case[@name=case], catch[@name=catch], class[@name=class],
+  break[@name=break], case[@name=case], catch[@name=catch],
   clone[@name=clone], const[@name=const], continue[@name=continue], default[@name=default],
   declare[@name=declare], do[@name=do], echo[@name=echo], else[@name=else], elseif[@name=elseif],
   enddeclare[@name=enddeclare], endfor[@name=endfor], endforeach[@name=endforeach],
@@ -440,6 +440,7 @@ commaSep<content> { "" | content ("," content?)* }
 commaSep1<content> { content ("," content?)* }
 
 static[@dynamicPrecedence=1] { @extend[@name=static]<Name, "static" | "STATIC"> }
+class { @extend[@name=class]<Name, "class" | "CLASS"> }
 
 @external tokens expression from "./tokens" {
   castOpen[@name="("],
