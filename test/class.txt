@@ -358,7 +358,7 @@ Template(
   ExpressionStatement(
     ScopedExpression(
       Name,
-      Name
+      ClassMemberName(Name)
     ),
     ";"
   )
