@@ -344,3 +344,22 @@ Template(
     )
   )
 )
+
+# Class constant
+
+<?php
+
+A::class;
+
+==>
+
+Template(
+  TextInterpolation(PhpOpen),
+  ExpressionStatement(
+    ScopedExpression(
+      Name,
+      Name
+    ),
+    ";"
+  )
+)
