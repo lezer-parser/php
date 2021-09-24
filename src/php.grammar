@@ -324,7 +324,11 @@ DynamicVariable { "$" (VariableName | DynamicVariable) | "${" expression "}" }
 
 ParenthesizedExpression { "(" expression ")" }
 
-ScopedExpression { expression !scope "::" (Name | VariableName) }
+ScopedExpression { expression !scope "::" ClassMemberName }
+
+ClassMemberName {
+  Name | VariableName
+}
 
 ArgList {
   "(" commaSep<argument> ")"

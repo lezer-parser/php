@@ -82,8 +82,8 @@ Template(
         Name,
         UseList(
           UseAsClause(Name, as, Visibility),
-          UseAsClause(ScopedExpression(Name, Name), as, Name),
-          UseAsClause(ScopedExpression(Name, Name), as, Name))))))
+          UseAsClause(ScopedExpression(Name, ClassMemberName(Name)), as, Name),
+          UseAsClause(ScopedExpression(Name, ClassMemberName(Name)), as, Name))))))
 
 # Namespace names in namespaces
 
@@ -213,7 +213,7 @@ Template(
       Parameter(
         VariableName,
         AssignOp,
-        ScopedExpression(Name, Name))),
+        ScopedExpression(Name, ClassMemberName(Name)))),
     Block(EchoStatement(echo,VariableName))))
 
 # Static variables in functions
@@ -387,7 +387,7 @@ Template(
     Attributes(Attribute(Name)),
     Attributes(Attribute(QualifiedName(NamespaceName(Name),Name))),
     Attributes(Attribute(Name,ArgList(Integer))),
-    Attributes(Attribute(Name,ArgList(ScopedExpression(Name,Name)))),
+    Attributes(Attribute(Name,ArgList(ScopedExpression(Name,ClassMemberName(Name))))),
     Attributes(Attribute(Name,ArgList(ArrayExpression(array, ValueList(Pair(String, String)))))),
     Attributes(Attribute(Name,ArgList(BinaryExpression(Integer, ArithOp, Integer)))),
     class,
@@ -465,13 +465,13 @@ Template(
               ),
               MatchBlock(
                 MatchArm(
-                  ScopedExpression(Name, Name),
-                  ScopedExpression(Name, Name),
+                  ScopedExpression(Name, ClassMemberName(Name)),
+                  ScopedExpression(Name, ClassMemberName(Name)),
                   String
                 ),
                 MatchArm(
-                  ScopedExpression(Name, Name),
-                  ScopedExpression(Name, Name),
+                  ScopedExpression(Name, ClassMemberName(Name)),
+                  ScopedExpression(Name, ClassMemberName(Name)),
                   String
                 )
               )

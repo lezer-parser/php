@@ -141,7 +141,7 @@ m::self();
 Template(
   TextInterpolation(PhpOpen),
   ExpressionStatement(
-    CallExpression(ScopedExpression(Name, Name), ArgList)))
+    CallExpression(ScopedExpression(Name, ClassMemberName(Name)), ArgList)))
 
 # Symmetric array destructuring
 
@@ -262,7 +262,7 @@ Template(
       ),
       AssignOp,
       CallExpression(
-        ScopedExpression(Name, Name),
+        ScopedExpression(Name, ClassMemberName(Name)),
         ArgList(VariableName)
       )
     )
@@ -752,7 +752,7 @@ Template(
   ExpressionStatement(
     ThrowExpression(throw,
       CallExpression(
-        ScopedExpression(Name, Name),
+        ScopedExpression(Name, ClassMemberName(Name)),
         ArgList
       )
     )
@@ -876,15 +876,15 @@ Template(
         ParenthesizedExpression(VariableName),
         MatchBlock(
           MatchArm(
-            ScopedExpression(Name, Name), VariableName
+            ScopedExpression(Name, ClassMemberName(Name)), VariableName
             VariableName
           ),
           MatchArm(
-            ScopedExpression(Name, Name),
+            ScopedExpression(Name, ClassMemberName(Name)),
             CallExpression(Name, ArgList)
           ),
           MatchArm(
-            ScopedExpression(Name, Name)
+            ScopedExpression(Name, ClassMemberName(Name))
             CallExpression(MemberExpression(VariableName, Name), ArgList)
           ),
           MatchArm(

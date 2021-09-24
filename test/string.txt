@@ -149,7 +149,7 @@ Template(
       Interpolation(DynamicVariable(
         ScopedExpression(
           Name,
-          Name
+          ClassMemberName(Name)
         )
       )),
       EscapeSequence
@@ -160,7 +160,7 @@ Template(
       Interpolation(DynamicVariable(
         ScopedExpression(
           Name,
-          VariableName
+          ClassMemberName(VariableName)
         )
       )),
       EscapeSequence
@@ -329,7 +329,7 @@ Template(
   ),
   ExpressionStatement(
     String(
-      Interpolation(CallExpression(ScopedExpression(VariableName,Name), ArgList))
+      Interpolation(CallExpression(ScopedExpression(VariableName,ClassMemberName(Name)), ArgList))
     )
   ),
   ExpressionStatement(
