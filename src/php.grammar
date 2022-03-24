@@ -541,4 +541,6 @@ class { @extend[@name=class]<Name, "class" | "CLASS"> }
 
 @external tokens eofToken from "./tokens" { eof }
 
+@external propSource phpHighlighting from "./highlight"
+
 @detectDelim
