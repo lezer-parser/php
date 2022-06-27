@@ -518,7 +518,7 @@ class { @extend[@name=class]<Name, "class" | "CLASS"> }
 
   letter { $[_a-zA-Z\u00A1-\u00ff] }
 
-  Name { letter (letter | std.digit)* }
+  Name { letter (letter | @digit)* }
 
   VariableName { "$" Name }
 
