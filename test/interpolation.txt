@@ -157,3 +157,10 @@ Template(
   TextInterpolation(Text, PhpOpen),
   ExpressionStatement(Name))
 
+# Text ends in a less-than char
+
+foo<
+
+==>
+
+Template(Text)

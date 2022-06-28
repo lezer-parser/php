@@ -467,11 +467,7 @@ class { @extend[@name=class]<Name, "class" | "CLASS"> }
   PhpClose[openedBy=phpOpen] { "?>" }
 
   textElement {
-    "\n" | ![\n<] textElement? | "<" textLess
-  }
-
-  textLess {
-    "\n" | ![\n\?] textElement?
+    "\n" | ![\n<] textElement? | "<" ("\n" | @eof | ![\n\?] textElement?)
   }
 
   digit { $[0-9] }
