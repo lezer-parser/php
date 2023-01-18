@@ -1,3 +1,11 @@
+## 1.0.1 (2023-01-18)
+
+### Bug fixes
+
+Fix an issue where the grammar didn't handle less-than characters at the end of the document correctly.
+
+Remove use of `require` as an identifier in the build output, which could break CommonJS builds.
+
 ## 1.0.0 (2022-06-06)
 
 ### New features
