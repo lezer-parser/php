@@ -13,7 +13,7 @@
   "author": "Marijn Haverbeke <marijnh@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@lezer/generator": "^1.1.0",
+    "@lezer/generator": "^1.2.2",
     "mocha": "^9.0.1",
     "rollup": "^2.52.2",
     "@rollup/plugin-node-resolve": "^9.0.0"

@@ -4,7 +4,7 @@ import {
   declare, _default, _do, echo, _else, elseif, enddeclare, endfor, endforeach, endif,
   endswitch, endwhile, _enum, _extends, final, _finally, fn, _for, foreach, from,
   _function, global, goto, _if, _implements, include, include_once, _instanceof,
-  insteadof, _interface, list, match, namespace, _new, _null, or, print, require, require_once,
+  insteadof, _interface, list, match, namespace, _new, _null, or, print, _require, require_once,
   _return, _switch, _throw, trait, _try, unset, use, _var, Visibility,
   _while, xor, _yield,
 
@@ -62,7 +62,7 @@ const keywordMap = {
   null: _null,
   or,
   print,
-  require,
+  require: _require,
   require_once,
   return: _return,
   switch: _switch,
