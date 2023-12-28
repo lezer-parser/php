@@ -361,7 +361,7 @@ Attribute {
 @skip {} {
   TextInterpolation { PhpClose Text? (PhpOpen | eof) }
 
-  Text { textElement+ }
+  Text[isolate] { textElement+ }
 
   InterpolatedString[@name=String] {
     startInterpolatedString (
@@ -508,7 +508,7 @@ class { @extend[@name=class]<Name, "class" | "CLASS"> }
 
   @precedence { startInterpolatedString, Name }
 
-  String { $[bB]? "'" (![\\'] | "\\" _)* "'"? }
+  String[isolate] { $[bB]? "'" (![\\'] | "\\" _)* "'"? }
 
   @precedence { String, Name }
 
@@ -520,13 +520,13 @@ class { @extend[@name=class]<Name, "class" | "CLASS"> }
 
   @precedence { VariableName, "${", "$" }
 
-  LineComment { ("//" | "#") lineCommentRest? }
+  LineComment[isolate] { ("//" | "#") lineCommentRest? }
   lineCommentRest { ![\r\n?] lineCommentRest? | "?" lineCommentQuestion }
   lineCommentQuestion { $[\r\n] | ![>\r\n] lineCommentRest? }
 
   @precedence { "#[", LineComment, ArithOp<"*" | "/" | "%"> }
 
-  BlockComment { "/*" blockCommentRest }
+  BlockComment[isolate] { "/*" blockCommentRest }
   blockCommentRest { ![*] blockCommentRest | "*" blockCommentAfterStar }
   blockCommentAfterStar { "/" | "*" blockCommentAfterStar | ![/*] blockCommentRest }
 
