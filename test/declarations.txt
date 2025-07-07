@@ -419,6 +419,8 @@ enum Suit: string
       Suit::Clubs, Suit::Spades => 'Black',
     };
   }
+
+  public const X = self::Clubs;
 }
 
 ==>
@@ -478,7 +480,9 @@ Template(
             )
           )
         )
-      )
+      ),
+
+      ConstDeclaration(Visibility,const,VariableDeclarator(Name,AssignOp,ScopedExpression(Name,ClassMemberName(Name))))
     )
   )
 )

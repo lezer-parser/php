@@ -160,7 +160,7 @@ BaseClause {
 }
 
 EnumBody {
-  "{" (EnumCase | MethodDeclaration | UseDeclaration)* "}"
+  "{" (EnumCase | memberDeclaration)* "}"
 }
 
 EnumCase {
