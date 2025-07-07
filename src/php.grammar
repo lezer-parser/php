@@ -11,6 +11,7 @@
 
   optionalType,
   unionType @left,
+  intersectionType @left,
 
   incdec @left,
   instanceof @left,
@@ -236,6 +237,7 @@ parameter {
 
 type[@isGroup=Type] {
   UnionType { type (!unionType LogicOp<"|"> type)+ } |
+  IntersectionType { type (!intersectionType "&" type)+ } |
   OptionalType { !optionalType LogicOp<"?"> type } |
   NamedType { qualifiedName | null | array }
 }

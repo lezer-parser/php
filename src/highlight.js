@@ -27,7 +27,7 @@ export const phpHighlighting = styleTags({
   "ClassDeclaration/Name": t.definition(t.className),
   UpdateOp: t.updateOperator,
   ArithOp: t.arithmeticOperator,
-  LogicOp: t.logicOperator,
+  "LogicOp IntersectionType/&": t.logicOperator,
   BitOp: t.bitwiseOperator,
   CompareOp: t.compareOperator,
   ControlOp: t.controlOperator,
