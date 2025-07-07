@@ -1,3 +1,9 @@
+## 1.0.3 (2025-07-07)
+
+### Bug fixes
+
+Allow const declarations in enum bodies.
+
 ## 1.0.2 (2023-12-28)
 
 ### Bug fixes
