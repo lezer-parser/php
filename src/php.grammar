@@ -343,7 +343,7 @@ argument {
 }
 
 memberName {
-  Name | VariableName | "{" expression "}"
+  MemberName | VariableName | "{" expression "}"
 }
 
 arrayElement {
@@ -517,6 +517,8 @@ class { @extend[@name=class]<Name, "class" | "CLASS"> }
   letter { $[_a-zA-Z\u00A1-\u00ff] }
 
   Name { letter (letter | @digit)* }
+
+  MemberName[@name=Name] { Name }
 
   VariableName { "$" Name }
 
