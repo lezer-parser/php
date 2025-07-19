@@ -177,7 +177,7 @@ ClassInterfaceClause {
 }
 
 memberDeclaration {
-  ConstDeclaration { Attributes* modifier* const commaSep1<ConstDeclarator> semicolon } |
+  ConstDeclaration { Attributes* modifier* const type? commaSep1<ConstDeclarator> semicolon } |
   PropertyDeclaration { Attributes* modifier* type? commaSep1<VariableDeclarator> (semicolon | PropertyHooks) } |
   MethodDeclaration |
   UseDeclaration
@@ -191,7 +191,8 @@ modifier {
   Visibility |
   static |
   final |
-  abstract
+  abstract |
+  readonly
 }
 
 VariableDeclarator { VariableName ("=" expression)? }
@@ -295,7 +296,7 @@ expression[@isGroup=Expression] {
   ArrowFunction { static? fn "&"? ParamList (":" type)? "=>" expression } |
   NewExpression {
     new expression (!new ArgList)? |
-    new class ArgList? BaseClause? ClassInterfaceClause? DeclarationList
+    new readonly? class ArgList? BaseClause? ClassInterfaceClause? DeclarationList
   } |
   IncDecExpression[@name=UpdateExpression] {
     expression !incdec ArithOp<"++" | "--"> |
@@ -439,8 +440,9 @@ semicolon {
   goto[@name=goto], if[@name=if], implements[@name=implements], include[@name=include],
   include_once[@name=include_once], instanceof[@name=LogicOp], insteadof[@name=insteadof],
   interface[@name=interface], list[@name=list], match[@name=match], namespace[@name=namespace],
-  new[@name=new], null[@name=null], or[@name=LogicOp], print[@name=print], require[@name=require],
-  require_once[@name=require_once], return[@name=return], switch[@name=switch], throw[@name=throw],
+  new[@name=new], null[@name=null], or[@name=LogicOp], print[@name=print], readonly[@name=readonly],
+  require[@name=require], require_once[@name=require_once],
+   return[@name=return], switch[@name=switch], throw[@name=throw],
   trait[@name=trait], try[@name=try], unset[@name=unset], use[@name=use], var[@name=var], Visibility,
   while[@name=while], xor[@name=LogicOp], yield[@name=yield]
 }
