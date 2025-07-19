@@ -332,7 +332,7 @@ ParenthesizedExpression { "(" expression ")" }
 ScopedExpression { expression !scope "::" ClassMemberName }
 
 ClassMemberName {
-  Name | VariableName
+  Name | VariableName | DynamicMemberName { "{" expression "}" }
 }
 
 ArgList {

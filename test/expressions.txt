@@ -1011,3 +1011,14 @@ Template(
       VariableName,
       ConcatOp,
       BinaryExpression(VariableName, BitOp, VariableName))))
+
+# Dynamic Class Constant
+
+<?php
+echo Foo::{$name};
+
+==>
+
+Template(
+  TextInterpolation(PhpOpen),
+  EchoStatement(echo,ScopedExpression(Name,ClassMemberName(DynamicMemberName(VariableName)))))
