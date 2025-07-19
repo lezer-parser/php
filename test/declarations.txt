@@ -486,3 +486,33 @@ Template(
     )
   )
 )
+
+# Property Hooks
+
+<?php
+
+class Example
+{
+    private bool $modified = false;
+
+    public string $foo = 'default value' {
+        get => $this->foo . ($this->modified ? ' (modified)' : '');
+
+        set(string $value) {
+            $this->foo = strtolower($value);
+            $this->modified = true;
+        }
+    }
+}
+
+==>
+
+Template(TextInterpolation(PhpOpen),ClassDeclaration(
+  class,Name,DeclarationList(
+    PropertyDeclaration(Visibility,NamedType(Name),VariableDeclarator(VariableName,AssignOp,Boolean)),
+    PropertyDeclaration(Visibility,NamedType(Name),VariableDeclarator(VariableName,AssignOp,String),PropertyHooks(
+      PropertyHook(Name,BinaryExpression(MemberExpression(VariableName,Name),ConcatOp,ParenthesizedExpression(
+        ConditionalExpression(MemberExpression(VariableName,Name),LogicOp,String,String)))),
+      PropertyHook(Name,ParamList(Parameter(NamedType(Name),VariableName)),Block(
+        ExpressionStatement(AssignmentExpression(MemberExpression(VariableName,Name),AssignOp,CallExpression(Name,ArgList(                       VariableName)))),
+        ExpressionStatement(AssignmentExpression(MemberExpression(VariableName,Name),AssignOp,Boolean)))))))))

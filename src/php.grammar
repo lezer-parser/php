@@ -178,10 +178,13 @@ ClassInterfaceClause {
 
 memberDeclaration {
   ConstDeclaration { Attributes* modifier* const commaSep1<ConstDeclarator> semicolon } |
-  PropertyDeclaration { Attributes* modifier* type? commaSep1<VariableDeclarator> semicolon } |
+  PropertyDeclaration { Attributes* modifier* type? commaSep1<VariableDeclarator> (semicolon | PropertyHooks) } |
   MethodDeclaration |
   UseDeclaration
 }
+
+PropertyHooks { "{" PropertyHook* "}" }
+PropertyHook { Name ParamList? (Block | "=>" expression semicolon) }
 
 modifier {
   var |
@@ -231,7 +234,7 @@ parameter {
     Attributes* type? "&"? "..." VariableName
   } |
   PropertyParameter {
-    Visibility type? VariableName ("=" expression)?
+    Visibility type? VariableName ("=" expression | PropertyHooks)?
   }
 }
 
@@ -313,7 +316,7 @@ variable {
   ListExpression {
     list ValueList { "(" ","? commaSep<expression | Pair { expression !pair "=>" expression }> ")" }
   } |
-  SubscriptExpression { expression (!member "[" expression? "]" | !member "{" expression "}") } |
+  SubscriptExpression { expression !member "[" expression? "]" } |
   MemberExpression { expression !member ("->" | "?->") memberName } |
   DynamicVariable |
   VariableName |
