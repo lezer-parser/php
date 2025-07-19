@@ -131,7 +131,8 @@ statement[@isGroup=Statement] {
   } |
   NamespaceUseDeclaration {
     use (function | const)?
-    (commaSep1<qualifiedName (as Name)?> | "\\"? (NamespaceName !namespace "\\")* UseGroup)
+    (commaSep1<qualifiedName (as Name)?> |
+     ("\\" NamespaceNameInner | NamespaceName) !namespace "\\" (NamespaceNameInner "\\")* UseGroup)
     semicolon
   } |
   GlobalDeclaration {
@@ -145,12 +146,14 @@ statement[@isGroup=Statement] {
 qualifiedName {
   Name |
   QualifiedName {
-    "\\" (NamespaceName !namespace "\\")* Name |
-    (NamespaceName !namespace "\\")+ Name
+    "\\" (NamespaceNameInner !namespace "\\")* Name { rawName } |
+    NamespaceName !namespace "\\" (NamespaceNameInner "\\")* Name { rawName }
   }
 }
 
-NamespaceName { Name }
+NamespaceName { name }
+
+NamespaceNameInner[@name=NamespaceName] { rawName }
 
 UseGroup {
   "{" commaSep1<UseClause { (function | const)? qualifiedName (as Name)? }> "}"
@@ -421,6 +424,10 @@ BinaryExpression {
   expression !exponent ArithOp<"**"> expression
 }
 
+Name { name }
+
+MemberName[@name=Name] { rawName }
+
 semicolon {
   automaticSemicolon |
   ";"
@@ -428,7 +435,7 @@ semicolon {
 
 @skip { LineComment | BlockComment | whitespace | TextInterpolation }
 
-@external specialize {Name} keywords from "./tokens" {
+@external specialize {name} keywords from "./tokens" {
   abstract[@name=abstract], and[@name=LogicOp], array[@name=array], as[@name=as], Boolean,
   break[@name=break], case[@name=case], catch[@name=catch],
   clone[@name=clone], const[@name=const], continue[@name=continue], default[@name=default],
@@ -450,8 +457,8 @@ semicolon {
 commaSep<content> { "" | content ("," content?)* }
 commaSep1<content> { content ("," content?)* }
 
-static[@dynamicPrecedence=1] { @extend[@name=static]<Name, "static" | "STATIC"> }
-class { @extend[@name=class]<Name, "class" | "CLASS"> }
+static[@dynamicPrecedence=1] { @extend[@name=static]<name, "static" | "STATIC"> }
+class { @extend[@name=class]<name, "class" | "CLASS"> }
 
 @external tokens expression from "./tokens" {
   castOpen[@name="("],
@@ -513,19 +520,19 @@ class { @extend[@name=class]<Name, "class" | "CLASS"> }
   startInterpolatedString { $[bB]? '"' }
   endInterpolatedString { '"' }
 
-  @precedence { startInterpolatedString, Name }
+  @precedence { startInterpolatedString, name }
 
   String[isolate] { $[bB]? "'" (![\\'] | "\\" _)* "'"? }
 
-  @precedence { String, Name }
+  @precedence { String, name }
 
   letter { $[_a-zA-Z\u00A1-\u00ff] }
 
-  Name { letter (letter | @digit)* }
+  name { letter (letter | @digit)* }
 
-  MemberName[@name=Name] { Name }
+  rawName { name }
 
-  VariableName { "$" Name }
+  VariableName { "$" name }
 
   @precedence { VariableName, "${", "$" }
 

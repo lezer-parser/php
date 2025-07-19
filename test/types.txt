@@ -14,7 +14,7 @@ Template(
     Block),
   FunctionDefinition(function,
     Name, ParamList,
-    NamedType(QualifiedName(NamespaceName(Name), Name)),
+    NamedType(QualifiedName(NamespaceName, Name)),
     Block))
 
 # Primitive types

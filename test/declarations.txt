@@ -85,6 +85,23 @@ Template(
           UseAsClause(ScopedExpression(Name, ClassMemberName(Name)), as, Name),
           UseAsClause(ScopedExpression(Name, ClassMemberName(Name)), as, Name))))))
 
+# Use Groups
+
+<?php
+use a as b;
+use some\namespace\{ClassA, ClassB, ClassC as C};
+use function some\namespace\{fn_a, fn_b, fn_c};
+use const some\namespace\{ConstA, ConstB, ConstC};
+
+==>
+
+Template(
+  TextInterpolation(PhpOpen),
+  NamespaceUseDeclaration(use,Name,as,Name),
+  NamespaceUseDeclaration(use,NamespaceName,NamespaceName,UseGroup(UseClause(Name),UseClause(Name),UseClause(Name,as,Name))),
+  NamespaceUseDeclaration(use,function,NamespaceName,NamespaceName,UseGroup(UseClause(Name),UseClause(Name),UseClause(Name))),
+  NamespaceUseDeclaration(use,const,NamespaceName,NamespaceName,UseGroup(UseClause(Name),UseClause(Name),UseClause(Name))))
+
 # Namespace names in namespaces
 
 <?php
@@ -99,7 +116,7 @@ namespace Be \ ta {
 Template(
   TextInterpolation(PhpOpen),
   NamespaceDefinition(namespace,
-    QualifiedName(NamespaceName(Name), Name),
+    QualifiedName(NamespaceName, Name),
     Block(
       ClassDeclaration(class,
         Name,
@@ -385,7 +402,7 @@ Template(
   ),
   ClassDeclaration(
     Attributes(Attribute(Name)),
-    Attributes(Attribute(QualifiedName(NamespaceName(Name),Name))),
+    Attributes(Attribute(QualifiedName(NamespaceName,Name))),
     Attributes(Attribute(Name,ArgList(Integer))),
     Attributes(Attribute(Name,ArgList(ScopedExpression(Name,ClassMemberName(Name))))),
     Attributes(Attribute(Name,ArgList(ArrayExpression(array, ValueList(Pair(String, String)))))),
