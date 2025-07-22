@@ -1,6 +1,6 @@
 {
   "name": "@lezer/php",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Lezer-based PHP grammar",
   "main": "dist/index.cjs",
   "type": "module",

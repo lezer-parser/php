@@ -1,3 +1,19 @@
+## 1.0.4 (2025-07-22)
+
+### Bug fixes
+
+Properly parse intersection types.
+
+Allow using keywords as member names in `->` syntax.
+
+Properly parse class property hooks.
+
+Parse dynamic scoped member access (`::{...}`).
+
+Properly parse `readonly` modifiers on properties and anonymous classes.
+
+Allow names after namespace separators to be keywords.
+
 ## 1.0.3 (2025-07-07)
 
 ### Bug fixes
