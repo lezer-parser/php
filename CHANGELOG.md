@@ -1,3 +1,9 @@
+## 1.0.5 (2025-09-23)
+
+### Bug fixes
+
+Make the package work with new TS resolution styles.
+
 ## 1.0.4 (2025-07-22)
 
 ### Bug fixes
