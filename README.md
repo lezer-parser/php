@@ -1,3 +1,5 @@
+**This repository has moved to https://code.haverbeke.berlin/lezer/php**
+
 # @lezer/php
 
 This is a PHP grammar for the
